@@ -1,4 +1,4 @@
-// src/AuthProvider.jsx
+// AuthProvider.jsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   onAuthStateChanged,
@@ -14,74 +14,55 @@ import { auth, googleProvider, db } from './firebase.js';
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
-/* ─── i18n for login screen ─── */
 const loginTexts = {
   'pt-BR': {
-    tagline: 'Seu Modo Carreira. Sua História.',
+    tagline: 'SEU MODO CARREIRA. SUA HISTÓRIA.',
     subtitle: 'Registre cada temporada, cada transferência, cada troféu. O tracker definitivo para EA FC.',
-    email: 'Email',
-    password: 'Senha',
-    login: 'Entrar',
-    register: 'Criar conta',
-    google: 'Entrar com Google',
-    or: 'ou',
-    toggle_register: 'Não tem conta? Cadastre-se',
-    toggle_login: 'Já tem conta? Entrar',
+    email: 'Email', password: 'Senha', login: 'ENTRAR', register: 'CRIAR CONTA',
+    google: 'Entrar com Google', or: 'ou',
+    toggle_register: 'Não tem conta? Cadastre-se', toggle_login: 'Já tem conta? Entrar',
     name: 'Seu nome',
-    error_email: 'Email inválido',
-    error_password: 'Senha deve ter 6+ caracteres',
-    features: ['Modo Carreira Treinador', 'Modo Carreira Jogador', 'Histórico de Temporadas', 'Nuvem Sincronizada']
+    features: ['Carreira Treinador', 'Carreira Jogador', 'Histórico de Temporadas', 'Cloud Sync']
   },
   en: {
-    tagline: 'Your Career Mode. Your Legacy.',
+    tagline: 'YOUR CAREER MODE. YOUR LEGACY.',
     subtitle: 'Track every season, every transfer, every trophy. The ultimate tracker for EA FC.',
-    email: 'Email',
-    password: 'Password',
-    login: 'Sign In',
-    register: 'Create Account',
-    google: 'Sign in with Google',
-    or: 'or',
-    toggle_register: "Don't have an account? Sign Up",
-    toggle_login: 'Already have an account? Sign In',
+    email: 'Email', password: 'Password', login: 'SIGN IN', register: 'CREATE ACCOUNT',
+    google: 'Sign in with Google', or: 'or',
+    toggle_register: "Don't have an account? Sign Up", toggle_login: 'Already have an account? Sign In',
     name: 'Your name',
-    error_email: 'Invalid email',
-    error_password: 'Password must be 6+ characters',
-    features: ['Manager Career', 'Player Career', 'Season History', 'Cloud Synced']
+    features: ['Manager Career', 'Player Career', 'Season History', 'Cloud Sync']
   },
   es: {
-    tagline: 'Tu Modo Carrera. Tu Legado.',
+    tagline: 'TU MODO CARRERA. TU LEGADO.',
     subtitle: 'Registra cada temporada, cada fichaje, cada trofeo. El tracker definitivo para EA FC.',
-    email: 'Email',
-    password: 'Contraseña',
-    login: 'Iniciar Sesión',
-    register: 'Crear Cuenta',
-    google: 'Entrar con Google',
-    or: 'o',
-    toggle_register: '¿No tienes cuenta? Regístrate',
-    toggle_login: '¿Ya tienes cuenta? Inicia sesión',
+    email: 'Email', password: 'Contraseña', login: 'ENTRAR', register: 'CREAR CUENTA',
+    google: 'Entrar con Google', or: 'o',
+    toggle_register: '¿No tienes cuenta? Regístrate', toggle_login: '¿Ya tienes cuenta? Inicia sesión',
     name: 'Tu nombre',
-    error_email: 'Email inválido',
-    error_password: 'La contraseña debe tener 6+ caracteres',
-    features: ['Carrera Entrenador', 'Carrera Jugador', 'Historial de Temporadas', 'Sincronización en la nube']
+    features: ['Carrera Entrenador', 'Carrera Jugador', 'Historial Temporadas', 'Cloud Sync']
   }
 };
 
-/* ─── Playr Logo SVG ─── */
+/* ─── New Playr Logo — geometric/angular EA FC-inspired ─── */
 const PlayrLogo = ({ size = 48, color = '#00F0FF' }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="logoGrad" x1="0" y1="0" x2="64" y2="64">
         <stop offset="0%" stopColor={color} />
-        <stop offset="100%" stopColor="#6C5CE7" />
+        <stop offset="50%" stopColor="#6C5CE7" />
+        <stop offset="100%" stopColor={color} />
       </linearGradient>
+      <clipPath id="hexClip">
+        <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" />
+      </clipPath>
     </defs>
-    <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#logoGrad)" opacity="0.15" stroke={color} strokeWidth="2" />
-    <path d="M20 16 L44 32 L20 48 Z" fill={color} opacity="0.9" />
-    <rect x="20" y="16" width="6" height="32" rx="2" fill={color} />
+    <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" opacity="0.8" />
+    <polygon points="32,10 52,21 52,43 32,54 12,43 12,21" fill={color} opacity="0.06" />
+    <polygon points="24,20 46,32 24,44" fill={color} opacity="0.9" />
   </svg>
 );
 
-/* ─── Login Screen Component ─── */
 function LoginScreen() {
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
@@ -118,208 +99,132 @@ function LoginScreen() {
   const handleGoogle = async () => {
     setError('');
     setLoading(true);
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (err) {
-      setError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*\)/, ''));
-    }
+    try { await signInWithPopup(auth, googleProvider); }
+    catch (err) { setError(err.message.replace('Firebase: ', '').replace(/\(auth\/.*\)/, '')); }
     setLoading(false);
   };
 
-  const s = {
-    page: {
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #0a0a0f 0%, #0d1117 40%, #0f1923 100%)',
-      fontFamily: "'Outfit', sans-serif",
-      padding: '20px',
-      position: 'relative',
-      overflow: 'hidden',
-    },
-    bgOrb1: {
-      position: 'absolute', width: 600, height: 600, borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(0,240,255,0.06) 0%, transparent 70%)',
-      top: '-200px', right: '-100px', pointerEvents: 'none',
-    },
-    bgOrb2: {
-      position: 'absolute', width: 500, height: 500, borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(108,92,231,0.06) 0%, transparent 70%)',
-      bottom: '-150px', left: '-100px', pointerEvents: 'none',
-    },
-    card: {
-      background: 'rgba(15,20,30,0.85)',
-      backdropFilter: 'blur(40px)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: 24,
-      padding: '48px 40px',
-      maxWidth: 440,
-      width: '100%',
-      position: 'relative',
-      zIndex: 1,
-      boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
-    },
-    logoRow: {
-      display: 'flex', alignItems: 'center', gap: 14, marginBottom: 8,
-    },
-    brand: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: 36, fontWeight: 700, color: '#fff',
-      letterSpacing: '-0.5px',
-    },
-    tagline: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: 20, color: 'rgba(255,255,255,0.85)',
-      marginBottom: 6, fontStyle: 'italic', fontWeight: 400,
-    },
-    subtitle: {
-      fontSize: 13, color: 'rgba(255,255,255,0.4)',
-      lineHeight: 1.5, marginBottom: 32,
-    },
-    features: {
-      display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 28,
-    },
-    badge: {
-      fontSize: 11, padding: '4px 12px', borderRadius: 20,
-      background: 'rgba(0,240,255,0.08)', color: '#00F0FF',
-      border: '1px solid rgba(0,240,255,0.15)', fontWeight: 500,
-    },
-    input: {
-      width: '100%', padding: '14px 16px', borderRadius: 12,
-      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-      color: '#fff', fontSize: 14, fontFamily: "'Outfit', sans-serif",
-      outline: 'none', marginBottom: 12, boxSizing: 'border-box',
-      transition: 'border-color 0.2s',
-    },
-    btn: {
-      width: '100%', padding: '14px', borderRadius: 12,
-      background: 'linear-gradient(135deg, #00F0FF, #6C5CE7)',
-      color: '#fff', fontSize: 15, fontWeight: 600,
-      border: 'none', cursor: 'pointer',
-      fontFamily: "'Outfit', sans-serif",
-      transition: 'transform 0.15s, box-shadow 0.15s',
-      boxShadow: '0 4px 20px rgba(0,240,255,0.2)',
-    },
-    divider: {
-      display: 'flex', alignItems: 'center', gap: 12,
-      margin: '20px 0', color: 'rgba(255,255,255,0.2)', fontSize: 12,
-    },
-    line: { flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' },
-    googleBtn: {
-      width: '100%', padding: '13px', borderRadius: 12,
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.1)',
-      color: '#fff', fontSize: 14, fontWeight: 500,
-      cursor: 'pointer', fontFamily: "'Outfit', sans-serif",
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-      transition: 'background 0.2s',
-    },
-    toggle: {
-      textAlign: 'center', marginTop: 20, fontSize: 13,
-      color: 'rgba(255,255,255,0.4)', cursor: 'pointer',
-    },
-    error: {
-      background: 'rgba(255,60,60,0.1)', border: '1px solid rgba(255,60,60,0.2)',
-      borderRadius: 10, padding: '10px 14px', fontSize: 13,
-      color: '#ff6b6b', marginBottom: 16,
-    },
-    langRow: {
-      display: 'flex', justifyContent: 'center', gap: 12,
-      marginBottom: 24,
-    },
-    langBtn: (active) => ({
-      fontSize: 12, padding: '4px 10px', borderRadius: 8,
-      background: active ? 'rgba(0,240,255,0.15)' : 'transparent',
-      color: active ? '#00F0FF' : 'rgba(255,255,255,0.3)',
-      border: active ? '1px solid rgba(0,240,255,0.3)' : '1px solid transparent',
-      cursor: 'pointer', fontFamily: "'Outfit', sans-serif",
-    }),
-  };
-
   return (
-    <div style={s.page}>
-      <div style={s.bgOrb1} />
-      <div style={s.bgOrb2} />
-      <div style={s.card}>
-        <div style={s.langRow}>
-          {['pt-BR', 'en', 'es'].map(l => (
-            <button key={l} style={s.langBtn(lang === l)} onClick={() => setLang(l)}>
-              {l === 'pt-BR' ? '🇧🇷 PT' : l === 'en' ? '🇬🇧 EN' : '🇪🇸 ES'}
-            </button>
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: '#080b12', fontFamily: "'Inter', sans-serif", padding: 20,
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Background effects */}
+      <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,240,255,0.04) 0%, transparent 70%)', top: -300, right: -200, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(108,92,231,0.04) 0%, transparent 70%)', bottom: -200, left: -100, pointerEvents: 'none' }} />
+      {/* Subtle grid lines */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px)', backgroundSize: '60px 60px', pointerEvents: 'none' }} />
+
+      <div style={{
+        background: 'rgba(12,16,24,0.9)', backdropFilter: 'blur(40px)',
+        borderRadius: 20, padding: '44px 38px', maxWidth: 420, width: '100%',
+        position: 'relative', zIndex: 1,
+        boxShadow: '0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
+        border: 'none',
+      }}>
+        {/* Language selector */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 28 }}>
+          {[['pt-BR', 'PT'], ['en', 'EN'], ['es', 'ES']].map(([code, label]) => (
+            <button key={code} onClick={() => setLang(code)} style={{
+              fontSize: 11, padding: '5px 14px', borderRadius: 6,
+              background: lang === code ? 'rgba(0,240,255,0.12)' : 'rgba(255,255,255,0.03)',
+              color: lang === code ? '#00F0FF' : 'rgba(255,255,255,0.3)',
+              border: 'none', cursor: 'pointer', fontFamily: "'Rajdhani', sans-serif",
+              fontWeight: 700, letterSpacing: '0.08em', transition: 'all 0.15s',
+            }}>{label}</button>
           ))}
         </div>
 
-        <div style={s.logoRow}>
+        {/* Logo + Brand */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 6 }}>
           <PlayrLogo size={44} />
-          <span style={s.brand}>Playr</span>
-        </div>
-        <div style={s.tagline}>{t.tagline}</div>
-        <div style={s.subtitle}>{t.subtitle}</div>
-
-        <div style={s.features}>
-          {t.features.map((f, i) => <span key={i} style={s.badge}>{f}</span>)}
+          <span style={{
+            fontFamily: "'Rajdhani', sans-serif", fontSize: 38, fontWeight: 700,
+            color: '#fff', letterSpacing: '0.04em', lineHeight: 1,
+          }}>PLAYR</span>
         </div>
 
-        {error && <div style={s.error}>{error}</div>}
+        <div style={{
+          fontFamily: "'Rajdhani', sans-serif", fontSize: 14, fontWeight: 600,
+          color: '#00F0FF', letterSpacing: '0.15em', marginBottom: 8, marginTop: 12,
+        }}>{t.tagline}</div>
+
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, marginBottom: 28 }}>
+          {t.subtitle}
+        </div>
+
+        {/* Feature badges */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 28 }}>
+          {t.features.map((f, i) => (
+            <span key={i} style={{
+              fontSize: 10, padding: '4px 10px', borderRadius: 4,
+              background: 'rgba(0,240,255,0.06)', color: 'rgba(0,240,255,0.7)',
+              fontWeight: 600, fontFamily: "'Rajdhani', sans-serif",
+              letterSpacing: '0.05em', textTransform: 'uppercase',
+            }}>{f}</span>
+          ))}
+        </div>
+
+        {error && (
+          <div style={{
+            background: 'rgba(255,60,60,0.08)', borderRadius: 8,
+            padding: '10px 14px', fontSize: 13, color: '#ff6b6b', marginBottom: 16,
+            borderLeft: '3px solid #ff6b6b',
+          }}>{error}</div>
+        )}
 
         <form onSubmit={handleEmail}>
           {isRegister && (
-            <input
-              style={s.input}
-              placeholder={t.name}
-              value={name}
+            <input style={inputStyle} placeholder={t.name} value={name}
               onChange={e => setName(e.target.value)}
-              onFocus={e => e.target.style.borderColor = 'rgba(0,240,255,0.4)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+              onFocus={e => { e.target.style.borderColor = 'rgba(0,240,255,0.3)'; e.target.style.background = 'rgba(0,240,255,0.04)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.06)'; e.target.style.background = 'rgba(255,255,255,0.03)'; }}
             />
           )}
-          <input
-            style={s.input}
-            type="email"
-            placeholder={t.email}
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            onFocus={e => e.target.style.borderColor = 'rgba(0,240,255,0.4)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+          <input style={inputStyle} type="email" placeholder={t.email} value={email}
+            onChange={e => setEmail(e.target.value)} required
+            onFocus={e => { e.target.style.borderColor = 'rgba(0,240,255,0.3)'; e.target.style.background = 'rgba(0,240,255,0.04)'; }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.06)'; e.target.style.background = 'rgba(255,255,255,0.03)'; }}
           />
-          <input
-            style={s.input}
-            type="password"
-            placeholder={t.password}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            minLength={6}
-            onFocus={e => e.target.style.borderColor = 'rgba(0,240,255,0.4)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+          <input style={inputStyle} type="password" placeholder={t.password} value={password}
+            onChange={e => setPassword(e.target.value)} required minLength={6}
+            onFocus={e => { e.target.style.borderColor = 'rgba(0,240,255,0.3)'; e.target.style.background = 'rgba(0,240,255,0.04)'; }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.06)'; e.target.style.background = 'rgba(255,255,255,0.03)'; }}
           />
-          <button
-            type="submit"
-            style={{ ...s.btn, opacity: loading ? 0.7 : 1 }}
-            disabled={loading}
-            onMouseOver={e => { e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 6px 30px rgba(0,240,255,0.3)'; }}
-            onMouseOut={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 20px rgba(0,240,255,0.2)'; }}
+          <button type="submit" disabled={loading} style={{
+            width: '100%', padding: 14, borderRadius: 10,
+            background: 'linear-gradient(135deg, #00D4FF 0%, #6C5CE7 100%)',
+            color: '#fff', fontSize: 14, fontWeight: 700, border: 'none', cursor: 'pointer',
+            fontFamily: "'Rajdhani', sans-serif", letterSpacing: '0.12em',
+            transition: 'all 0.15s', opacity: loading ? 0.6 : 1,
+            boxShadow: '0 4px 24px rgba(0,200,255,0.15)',
+          }}
+            onMouseOver={e => { e.target.style.boxShadow = '0 6px 32px rgba(0,200,255,0.25)'; e.target.style.transform = 'translateY(-1px)'; }}
+            onMouseOut={e => { e.target.style.boxShadow = '0 4px 24px rgba(0,200,255,0.15)'; e.target.style.transform = 'translateY(0)'; }}
           >
             {loading ? '...' : isRegister ? t.register : t.login}
           </button>
         </form>
 
-        <div style={s.divider}>
-          <div style={s.line} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '20px 0', color: 'rgba(255,255,255,0.15)', fontSize: 11, letterSpacing: '0.1em' }}>
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
           <span>{t.or}</span>
-          <div style={s.line} />
+          <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.06)' }} />
         </div>
 
-        <button
-          style={s.googleBtn}
-          onClick={handleGoogle}
-          disabled={loading}
-          onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.08)'}
-          onMouseOut={e => e.target.style.background = 'rgba(255,255,255,0.04)'}
+        <button onClick={handleGoogle} disabled={loading} style={{
+          width: '100%', padding: 13, borderRadius: 10,
+          background: 'rgba(255,255,255,0.03)', border: 'none',
+          color: 'rgba(255,255,255,0.7)', fontSize: 13, fontWeight: 500,
+          cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          transition: 'all 0.15s',
+        }}
+          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+          onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24">
+          <svg width="16" height="16" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.39l3.56-2.77z" transform="translate(0.5,0)"/>
@@ -328,11 +233,10 @@ function LoginScreen() {
           {t.google}
         </button>
 
-        <div
-          style={s.toggle}
-          onClick={() => { setIsRegister(!isRegister); setError(''); }}
+        <div onClick={() => { setIsRegister(!isRegister); setError(''); }}
+          style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'rgba(255,255,255,0.3)', cursor: 'pointer', transition: 'color 0.15s' }}
           onMouseOver={e => e.target.style.color = '#00F0FF'}
-          onMouseOut={e => e.target.style.color = 'rgba(255,255,255,0.4)'}
+          onMouseOut={e => e.target.style.color = 'rgba(255,255,255,0.3)'}
         >
           {isRegister ? t.toggle_login : t.toggle_register}
         </div>
@@ -341,7 +245,14 @@ function LoginScreen() {
   );
 }
 
-/* ─── Auth Provider ─── */
+const inputStyle = {
+  width: '100%', padding: '13px 16px', borderRadius: 10,
+  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+  color: '#fff', fontSize: 14, fontFamily: "'Inter', sans-serif",
+  outline: 'none', marginBottom: 12, boxSizing: 'border-box',
+  transition: 'all 0.2s',
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -353,22 +264,13 @@ export function AuthProvider({ children }) {
       if (u) {
         const ref = doc(db, 'users', u.uid);
         const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setUserData(snap.data());
-        } else {
-          const initial = {
-            displayName: u.displayName || '',
-            email: u.email,
-            createdAt: serverTimestamp(),
-            settings: { language: 'pt-BR', accentColor: '#00F0FF', currency: 'EUR', theme: 'dark' },
-            saves: [],
-          };
+        if (snap.exists()) { setUserData(snap.data()); }
+        else {
+          const initial = { displayName: u.displayName || '', email: u.email, createdAt: serverTimestamp(), settings: { language: 'pt-BR', accentColor: '#00F0FF', currency: 'EUR', theme: 'dark' }, saves: [] };
           await setDoc(ref, initial);
           setUserData(initial);
         }
-      } else {
-        setUserData(null);
-      }
+      } else { setUserData(null); }
       setLoading(false);
     });
     return () => unsub();
@@ -385,10 +287,7 @@ export function AuthProvider({ children }) {
     if (!user) return null;
     const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
-    if (snap.exists()) {
-      setUserData(snap.data());
-      return snap.data();
-    }
+    if (snap.exists()) { setUserData(snap.data()); return snap.data(); }
     return null;
   }, [user]);
 
@@ -396,13 +295,10 @@ export function AuthProvider({ children }) {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#0a0a0f', color: '#00F0FF', fontFamily: "'Outfit', sans-serif", fontSize: 18,
-      }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#080b12', color: '#00F0FF', fontFamily: "'Rajdhani', sans-serif", fontSize: 18 }}>
         <div style={{ textAlign: 'center' }}>
           <PlayrLogo size={56} />
-          <div style={{ marginTop: 16, opacity: 0.7 }}>Loading...</div>
+          <div style={{ marginTop: 16, opacity: 0.5, letterSpacing: '0.15em', fontWeight: 600 }}>LOADING...</div>
         </div>
       </div>
     );
