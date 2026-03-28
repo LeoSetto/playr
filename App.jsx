@@ -219,6 +219,27 @@ const TROPHY_TYPES = [
 const SCOUT_REGIONS = [
   'South America','Europe','Africa','Asia','North America','Oceania'
 ];
+const PLAYSTYLES = [
+  'Finesse Shot','Power Shot','Low Driven','Chip Shot','Enforcer','Gamechanger',
+  'First Touch','Flair','Press Proven','Tiki Taka','Technical','Rapid','Quick Step',
+  'Incisive Pass','Pinged Pass','Long Ball','Whipped Pass','Inventive',
+  'Intercept','Block','Slide Tackle','Anticipate','Jockey','Bruiser',
+  'Aerial Fortress','Acrobatic','Long Throw','Trivela',
+  'Cross Claimer','Far Reach','Rush Out','Footwork','Deflector'
+];
+const PLAYER_ROLES = [
+  'Advanced Forward','Poacher','Target Forward','False 9',
+  'Inside Forward','Wide Playmaker','Classic Winger','Trequartista',
+  'Shadow Striker','Playmaker','Classic 10','Half-Winger',
+  'Box-to-Box','Holding','Deep-Lying Playmaker','Mezzala','Centre-Half',
+  'Wide Back','Fullback','Attacking Wingback','Falseback',
+  'Ball-Playing Defender','Stopper','Sweeper','Goalkeeper','Sweeper Keeper'
+];
+const WORK_RATES = ['High/High','High/Medium','High/Low','Medium/High','Medium/Medium','Medium/Low','Low/High','Low/Medium','Low/Low'];
+const FOOT_PREF = ['Right','Left','Both'];
+const PLAYER_STATUS = ['Starter','Substitute','Reserve','Loan Listed','Transfer Listed','Youth'];
+const MORALE_LEVELS = ['Ecstatic','Happy','Content','Unhappy','Furious'];
+const DEV_PLANS = ['Balanced','Defending','Physical','Attacking','Playmaking','Goalkeeping','None'];
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
 
@@ -831,41 +852,250 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
   /* — Squad Tab — */
   const SquadTab = () => {
     const squad = save.squad || [];
+    const [view, setView] = useState('cards');
+    const [sortBy, setSortBy] = useState('ovr');
+    const [sortDir, setSortDir] = useState('desc');
+    const [filterPos, setFilterPos] = useState('All');
+    const [filterStatus, setFilterStatus] = useState('All');
+    const [expandedPlayer, setExpandedPlayer] = useState(null);
+    const [searchQ, setSearchQ] = useState('');
+
+    const posGroups = { All: null, GK: ['GK'], DEF: ['CB','LB','RB','LWB','RWB'], MID: ['CDM','CM','CAM','LM','RM'], ATK: ['LW','RW','ST','CF','LF','RF'] };
+    const filtered = squad.filter(p => {
+      const posMatch = filterPos === 'All' || (posGroups[filterPos] ? posGroups[filterPos].includes(p.position) : p.position === filterPos);
+      const statusMatch = filterStatus === 'All' || p.status === filterStatus;
+      const nameMatch = !searchQ || p.name?.toLowerCase().includes(searchQ.toLowerCase());
+      return posMatch && statusMatch && nameMatch;
+    });
+    const sorted = [...filtered].sort((a, b) => {
+      const va = a[sortBy] ?? 0, vb = b[sortBy] ?? 0;
+      if (typeof va === 'string') return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+      return sortDir === 'asc' ? va - vb : vb - va;
+    });
+
+    const avgOvr = squad.length ? Math.round(squad.reduce((s, p) => s + (p.ovr || 0), 0) / squad.length) : 0;
+    const avgAge = squad.length ? (squad.reduce((s, p) => s + (p.age || 0), 0) / squad.length).toFixed(1) : 0;
+    const totalValue = squad.reduce((s, p) => s + (p.value || 0), 0);
+    const totalWages = squad.reduce((s, p) => s + (p.wage || 0), 0);
+    const starters = squad.filter(p => p.status === 'Starter').length;
+
+    const toggleSort = (col) => {
+      if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+      else { setSortBy(col); setSortDir('desc'); }
+    };
+
+    const removePlayer = (idx) => update('squad', squad.filter((_, i) => i !== idx));
+
+    const updatePlayer = (idx, field, val) => {
+      const updated = [...squad];
+      updated[idx] = { ...updated[idx], [field]: val };
+      update('squad', updated);
+    };
+
+    /* Player Card Component */
+    const PlayerCard = ({ p, idx }) => {
+      const isExpanded = expandedPlayer === idx;
+      const ovrColor = p.ovr >= 85 ? '#FFD700' : p.ovr >= 75 ? '#2ecc71' : p.ovr >= 65 ? '#3498db' : '#95a5a6';
+      const statusColors = { Starter: '#2ecc71', Substitute: '#f1c40f', Reserve: '#95a5a6', 'Loan Listed': '#e67e22', 'Transfer Listed': '#e74c3c', Youth: '#9b59b6' };
+      const moraleIcons = { Ecstatic: '😄', Happy: '🙂', Content: '😐', Unhappy: '😞', Furious: '😡' };
+      return (
+        <div style={{
+          background: 'rgba(255,255,255,0.02)', border: `1px solid ${isExpanded ? S.accent + '30' : S.border}`,
+          borderRadius: 14, overflow: 'hidden', transition: 'all 0.2s',
+        }}>
+          {/* Main row */}
+          <div style={{ display: 'flex', alignItems: 'center', padding: '14px 16px', cursor: 'pointer', gap: 12 }}
+            onClick={() => setExpandedPlayer(isExpanded ? null : idx)}>
+            {/* OVR Badge */}
+            <div style={{
+              width: 48, height: 56, borderRadius: 6, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', background: `${ovrColor}12`,
+              border: `1px solid ${ovrColor}30`, flexShrink: 0,
+            }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: ovrColor, fontFamily: "'Rajdhani', sans-serif", lineHeight: 1 }}>{p.ovr || '—'}</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: ovrColor, opacity: 0.7, marginTop: 1 }}>{p.position}</div>
+            </div>
+            {/* Name + details */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {p.jerseyNumber ? `#${p.jerseyNumber} ` : ''}{p.name || '—'}
+                </span>
+                {p.loan && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 4, background: 'rgba(230,126,34,0.15)', color: '#e67e22', fontWeight: 700 }}>LOAN</span>}
+                {p.status && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 4, background: `${statusColors[p.status] || '#95a5a6'}15`, color: statusColors[p.status] || '#95a5a6', fontWeight: 700 }}>{p.status?.toUpperCase()}</span>}
+              </div>
+              <div style={{ display: 'flex', gap: 10, fontSize: 11, color: S.textSecondary, flexWrap: 'wrap' }}>
+                <span>POT {p.pot || '—'}</span>
+                <span>AGE {p.age || '—'}</span>
+                {p.role && <span style={{ color: S.accent }}>{p.role}</span>}
+                {p.foot && <span>{p.foot === 'Left' ? '🦶L' : p.foot === 'Right' ? '🦶R' : '🦶B'}</span>}
+                {p.skillMoves && <span>⭐{p.skillMoves}</span>}
+                {p.weakFoot && <span>🌟{p.weakFoot}</span>}
+                {p.morale && <span>{moraleIcons[p.morale] || ''}</span>}
+              </div>
+            </div>
+            {/* Value + wage */}
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: S.accent }}>{formatCurrency(p.value, currency)}</div>
+              <div style={{ fontSize: 11, color: S.textMuted }}>{formatCurrency(p.wage, currency)}/w</div>
+            </div>
+            <div style={{ fontSize: 16, color: S.textMuted, marginLeft: 4, transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)' }}>▾</div>
+          </div>
+
+          {/* Expanded details */}
+          {isExpanded && (
+            <div style={{ padding: '0 16px 16px', borderTop: `1px solid ${S.border}` }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8, marginTop: 14 }}>
+                {[
+                  { l: 'Contract', v: p.contract },
+                  { l: 'Work Rates', v: p.workRates },
+                  { l: 'Dev. Plan', v: p.devPlan },
+                  { l: 'Nationality', v: p.nationality },
+                  { l: 'Height', v: p.height },
+                  { l: 'Weight', v: p.weight },
+                ].filter(x => x.v).map((x, i) => (
+                  <div key={i} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: '8px 10px' }}>
+                    <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>{x.l}</div>
+                    <div style={{ fontSize: 12, color: S.textSecondary, fontWeight: 500 }}>{x.v}</div>
+                  </div>
+                ))}
+              </div>
+              {/* PlayStyles */}
+              {p.playStyles?.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>PLAYSTYLES</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    {p.playStyles.map((ps, i) => (
+                      <span key={i} style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, background: ps.endsWith('+') ? 'rgba(255,215,0,0.12)' : `${S.accent}10`, color: ps.endsWith('+') ? '#FFD700' : S.accent, fontWeight: 600 }}>{ps}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Notes */}
+              {p.notes && (
+                <div style={{ marginTop: 10, fontSize: 12, color: S.textMuted, fontStyle: 'italic' }}>📝 {p.notes}</div>
+              )}
+              {/* Quick actions */}
+              <div style={{ display: 'flex', gap: 6, marginTop: 14 }}>
+                <button style={S.btnSmall} onClick={() => { setForm({ ...p, _editIdx: idx }); setShowModal('editPlayer'); }}>✏️ Edit</button>
+                <button style={{ ...S.btnSmall, background: 'rgba(255,60,60,0.1)', color: '#ff6b6b' }} onClick={() => removePlayer(idx)}>🗑️ Remove</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
     return (
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={S.cardHeader}>{t.squad} ({squad.length})</div>
-          <button style={S.btnPrimary} onClick={() => { setForm({ name: '', position: 'ST', age: 20, ovr: 70, pot: 80, value: 0, wage: 0, contract: '2028', role: '', loan: false }); setShowModal('player'); }}>
-            {t.add_player}
-          </button>
+        {/* Stats bar */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, marginBottom: 20 }}>
+          {[
+            { v: squad.length, l: 'Players', icon: '👥' },
+            { v: starters, l: 'Starters', icon: '⚽' },
+            { v: avgOvr, l: 'Avg OVR', icon: '📊' },
+            { v: avgAge, l: 'Avg Age', icon: '📅' },
+            { v: formatCurrency(totalValue, currency), l: 'Squad Value', icon: '💰' },
+            { v: formatCurrency(totalWages, currency), l: 'Total Wages', icon: '💵' },
+          ].map((s, i) => (
+            <div key={i} style={{ ...S.statCard, padding: '14px' }}>
+              <div style={{ fontSize: 10, color: S.textMuted, marginBottom: 4 }}>{s.icon} {s.l}</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: i < 3 ? S.accent : S.textPrimary, fontFamily: "'Rajdhani', sans-serif" }}>{s.v}</div>
+            </div>
+          ))}
         </div>
-        {squad.length === 0 ? <div style={S.empty}>{t.none}</div> : (
+
+        {/* Toolbar */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+          <input style={{ ...S.input, width: 180, marginBottom: 0 }} placeholder={`🔍 ${t.search}...`} value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+          <div style={{ display: 'flex', gap: 2 }}>
+            {['All', 'GK', 'DEF', 'MID', 'ATK'].map(f => (
+              <button key={f} onClick={() => setFilterPos(f)} style={{
+                ...S.btnSmall, background: filterPos === f ? `${S.accent}20` : 'rgba(255,255,255,0.03)',
+                color: filterPos === f ? S.accent : S.textMuted, borderRadius: 6, fontSize: 10,
+                padding: '5px 10px', border: filterPos === f ? `1px solid ${S.accent}30` : '1px solid transparent',
+              }}>{f}</button>
+            ))}
+          </div>
+          <select style={{ ...S.select, width: 'auto', marginBottom: 0, padding: '5px 10px', fontSize: 11 }}
+            value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+            <option value="All" style={{ background: '#0c1018' }}>All Status</option>
+            {PLAYER_STATUS.map(s => <option key={s} value={s} style={{ background: '#0c1018' }}>{s}</option>)}
+          </select>
+          <select style={{ ...S.select, width: 'auto', marginBottom: 0, padding: '5px 10px', fontSize: 11 }}
+            value={sortBy} onChange={e => setSortBy(e.target.value)}>
+            {[['ovr','OVR'],['pot','POT'],['age','Age'],['name','Name'],['value','Value'],['wage','Wage']].map(([v,l]) =>
+              <option key={v} value={v} style={{ background: '#0c1018' }}>{l}</option>
+            )}
+          </select>
+          <button style={{ ...S.btnSmall, fontSize: 11 }} onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}>
+            {sortDir === 'desc' ? '↓' : '↑'}
+          </button>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+            {['cards', 'table'].map(v => (
+              <button key={v} onClick={() => setView(v)} style={{
+                ...S.btnSmall, background: view === v ? `${S.accent}20` : 'rgba(255,255,255,0.03)',
+                color: view === v ? S.accent : S.textMuted, fontSize: 10,
+              }}>{v === 'cards' ? '▦ Cards' : '☰ Table'}</button>
+            ))}
+          </div>
+          <button style={S.btnPrimary} onClick={() => {
+            setForm({ name: '', position: 'ST', age: 20, ovr: 70, pot: 80, value: 0, wage: 0, contract: '2028', role: '', loan: false, status: 'Starter', foot: 'Right', skillMoves: 3, weakFoot: 3, workRates: 'High/Medium', nationality: '', jerseyNumber: '', height: '', weight: '', morale: 'Content', devPlan: 'Balanced', playStyles: [], notes: '' });
+            setShowModal('player');
+          }}>{t.add_player}</button>
+        </div>
+
+        {/* Card View */}
+        {view === 'cards' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {sorted.length === 0 ? <div style={S.empty}>{t.none}</div> :
+              sorted.map((p, i) => {
+                const realIdx = squad.findIndex(sp => sp.id === p.id);
+                return <PlayerCard key={p.id || i} p={p} idx={realIdx} />;
+              })
+            }
+          </div>
+        )}
+
+        {/* Table View */}
+        {view === 'table' && (
           <div style={{ overflowX: 'auto' }}>
             <table style={S.table}>
               <thead><tr>
-                {[t.player, t.position, t.ovr, t.pot, t.age, t.value, t.wage, t.contract, t.actions].map((h, i) =>
-                  <th key={i} style={S.th}>{h}</th>
+                {['#','Player','POS','OVR','POT','Age','Role','Status','Value','Wage','⚡SM','🌟WF',''].map((h, i) =>
+                  <th key={i} style={{ ...S.th, cursor: 'pointer' }} onClick={() => {
+                    const colMap = { Player: 'name', POS: 'position', OVR: 'ovr', POT: 'pot', Age: 'age', Value: 'value', Wage: 'wage' };
+                    if (colMap[h]) toggleSort(colMap[h]);
+                  }}>{h}{sortBy === { Player: 'name', POS: 'position', OVR: 'ovr', POT: 'pot', Age: 'age', Value: 'value', Wage: 'wage' }[h] ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ''}</th>
                 )}
               </tr></thead>
               <tbody>
-                {squad.map((p, i) => (
-                  <tr key={p.id || i}>
-                    <td style={{ ...S.td, ...(i === 0 ? S.tdFirst : {}), fontWeight: 600, color: '#fff' }}>{p.name}</td>
-                    <td style={S.td}><span style={S.badge(S.accent)}>{p.position}</span></td>
-                    <td style={S.td}><div style={S.ovrCircle(p.ovr)}>{p.ovr}</div></td>
-                    <td style={S.td}>{p.pot}</td>
-                    <td style={S.td}>{p.age}</td>
-                    <td style={S.td}>{formatCurrency(p.value, currency)}</td>
-                    <td style={S.td}>{formatCurrency(p.wage, currency)}</td>
-                    <td style={S.td}>{p.contract}{p.loan ? ' 📌' : ''}</td>
-                    <td style={{ ...S.td, ...(i === 0 ? S.tdLast : {}) }}>
-                      <button style={S.btnDanger} onClick={() => {
-                        const updated = squad.filter((_, idx) => idx !== i);
-                        update('squad', updated);
-                      }}><Icon name="delete" size={14} color="#ff6b6b" /></button>
-                    </td>
-                  </tr>
-                ))}
+                {sorted.map((p, i) => {
+                  const realIdx = squad.findIndex(sp => sp.id === p.id);
+                  const ovrColor = p.ovr >= 85 ? '#FFD700' : p.ovr >= 75 ? '#2ecc71' : p.ovr >= 65 ? '#3498db' : '#95a5a6';
+                  return (
+                    <tr key={p.id || i}>
+                      <td style={{ ...S.td, fontSize: 11, color: S.textMuted }}>{p.jerseyNumber || '—'}</td>
+                      <td style={{ ...S.td, fontWeight: 700, color: '#fff', fontSize: 13 }}>{p.name}</td>
+                      <td style={S.td}><span style={S.badge(S.accent)}>{p.position}</span></td>
+                      <td style={S.td}><span style={{ fontWeight: 800, color: ovrColor, fontFamily: "'Rajdhani', sans-serif", fontSize: 16 }}>{p.ovr}</span></td>
+                      <td style={S.td}>{p.pot}</td>
+                      <td style={S.td}>{p.age}</td>
+                      <td style={{ ...S.td, fontSize: 11 }}>{p.role || '—'}</td>
+                      <td style={S.td}><span style={{ fontSize: 10, color: p.status === 'Starter' ? '#2ecc71' : S.textMuted }}>{p.status || '—'}</span></td>
+                      <td style={S.td}>{formatCurrency(p.value, currency)}</td>
+                      <td style={S.td}>{formatCurrency(p.wage, currency)}</td>
+                      <td style={{ ...S.td, fontSize: 12 }}>{p.skillMoves || '—'}</td>
+                      <td style={{ ...S.td, fontSize: 12 }}>{p.weakFoot || '—'}</td>
+                      <td style={S.td}>
+                        <div style={{ display: 'flex', gap: 4 }}>
+                          <button style={{ ...S.btnSmall, padding: '3px 8px' }} onClick={() => { setForm({ ...p, _editIdx: realIdx }); setShowModal('editPlayer'); }}>✏️</button>
+                          <button style={{ ...S.btnSmall, padding: '3px 8px', background: 'rgba(255,60,60,0.1)', color: '#ff6b6b' }} onClick={() => removePlayer(realIdx)}>✕</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1131,13 +1361,27 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
     const modals = {
       player: { title: t.add_player, key: 'squad', fields: [
         { name: 'name', label: t.player, type: 'text' },
+        { name: 'jerseyNumber', label: '#', type: 'number' },
         { name: 'position', label: t.position, type: 'select', options: POSITIONS },
-        { name: 'ovr', label: t.ovr, type: 'number' },
-        { name: 'pot', label: t.pot, type: 'number' },
+        { name: 'ovr', label: 'OVR', type: 'number' },
+        { name: 'pot', label: 'POT', type: 'number' },
         { name: 'age', label: t.age, type: 'number' },
         { name: 'value', label: t.value, type: 'number' },
         { name: 'wage', label: t.wage, type: 'number' },
         { name: 'contract', label: t.contract, type: 'text' },
+        { name: 'status', label: t.status, type: 'select', options: PLAYER_STATUS },
+        { name: 'role', label: 'Role', type: 'select', options: ['', ...PLAYER_ROLES] },
+        { name: 'foot', label: 'Foot', type: 'select', options: FOOT_PREF },
+        { name: 'skillMoves', label: 'Skill Moves', type: 'number' },
+        { name: 'weakFoot', label: 'Weak Foot', type: 'number' },
+        { name: 'workRates', label: 'Work Rates', type: 'select', options: WORK_RATES },
+        { name: 'nationality', label: t.nationality, type: 'text' },
+        { name: 'height', label: 'Height', type: 'text' },
+        { name: 'weight', label: 'Weight', type: 'text' },
+        { name: 'morale', label: 'Morale', type: 'select', options: MORALE_LEVELS },
+        { name: 'devPlan', label: 'Dev Plan', type: 'select', options: DEV_PLANS },
+        { name: 'loan', label: t.loan, type: 'select', options: ['false','true'] },
+        { name: 'notes', label: t.notes, type: 'text' },
       ]},
       transfer: { title: t.add_transfer, key: 'transfers', fields: [
         { name: 'playerName', label: t.player, type: 'text' },
@@ -1187,7 +1431,43 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
       ]},
     };
     const config = modals[showModal];
-    if (!config) return null;
+    if (!config && showModal !== 'editPlayer') return null;
+
+    /* Edit Player modal */
+    if (showModal === 'editPlayer') {
+      const editFields = modals.player.fields;
+      return (
+        <Modal show={true} onClose={() => setShowModal(null)} title={'✏️ Edit Player'} S={S}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {editFields.map(f => (
+              <div key={f.name} style={S.formGroup}>
+                <label style={S.label}>{f.label}</label>
+                {f.type === 'select' ? (
+                  <select style={S.select} value={String(form[f.name] ?? '')} onChange={e => setForm({ ...form, [f.name]: e.target.value })}>
+                    {f.options.map(o => <option key={o} value={o} style={{ background: '#0c1018' }}>{o}</option>)}
+                  </select>
+                ) : (
+                  <input style={S.input} type={f.type} value={form[f.name] ?? ''} onChange={e => setForm({ ...form, [f.name]: f.type === 'number' ? Number(e.target.value) : e.target.value })}
+                    onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+            <button style={S.btnPrimary} onClick={() => {
+              const idx = form._editIdx;
+              const { _editIdx, ...playerData } = form;
+              playerData.loan = playerData.loan === 'true' || playerData.loan === true;
+              const updated = [...(save.squad || [])];
+              updated[idx] = { ...updated[idx], ...playerData };
+              update('squad', updated);
+              setShowModal(null);
+            }}>{t.save}</button>
+            <button style={S.btnSecondary} onClick={() => setShowModal(null)}>{t.cancel}</button>
+          </div>
+        </Modal>
+      );
+    }
 
     return (
       <Modal show={true} onClose={() => setShowModal(null)} title={config.title} S={S}>
@@ -1208,7 +1488,9 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
         </div>
         <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
           <button style={S.btnPrimary} onClick={() => {
-            addItem(config.key, form);
+            const formData = { ...form };
+            if (formData.loan !== undefined) formData.loan = formData.loan === 'true' || formData.loan === true;
+            addItem(config.key, formData);
             if (showModal === 'teamChange') {
               update('currentTeam', form.team);
               update('league', form.league);
@@ -1537,16 +1819,53 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
 /* ═══════════════════════════════════════════════════════════════
    SETTINGS PAGE
    ═══════════════════════════════════════════════════════════════ */
-function SettingsPage({ settings, setSettings, saveFn, t, S }) {
-  const colors = ['#00F0FF','#6C5CE7','#2ecc71','#e74c3c','#f1c40f','#e67e22','#1abc9c','#9b59b6','#FF6B9D','#00D2FF'];
+function SettingsPage({ settings, setSettings, saveFn, saves, setSaves, t, S }) {
+  const colors = ['#00F0FF','#6C5CE7','#2ecc71','#e74c3c','#f1c40f','#e67e22','#1abc9c','#9b59b6','#FF6B9D','#00D2FF','#FF4757','#7BED9F','#70A1FF','#FFA502','#2F3542'];
+  const [customComp, setCustomComp] = useState('');
+  const [customTrophy, setCustomTrophy] = useState('');
+
+  const addCustom = (key, val) => {
+    if (!val.trim()) return;
+    const list = settings[key] || [];
+    if (!list.includes(val.trim())) {
+      setSettings({ ...settings, [key]: [...list, val.trim()] });
+    }
+  };
+  const removeCustom = (key, val) => {
+    setSettings({ ...settings, [key]: (settings[key] || []).filter(v => v !== val) });
+  };
+
+  const exportData = () => {
+    const data = JSON.stringify({ settings, saves }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `playr-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = () => {
+    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const text = await file.text();
+      try {
+        const data = JSON.parse(text);
+        if (data.settings) setSettings(data.settings);
+        if (data.saves) setSaves(data.saves);
+        saveFn({ settings: data.settings || settings, saves: data.saves || saves });
+        alert('Import successful!');
+      } catch { alert('Invalid file'); }
+    };
+    input.click();
+  };
 
   return (
     <div>
-      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 28 }}>{t.settings}</div>
+      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 28, letterSpacing: '0.04em' }}>{t.settings}</div>
 
       <div style={S.card}>
         <div style={S.cardHeader}>{t.language}</div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {[{ code: 'pt-BR', label: '🇧🇷 Português' }, { code: 'en', label: '🇬🇧 English' }, { code: 'es', label: '🇪🇸 Español' }].map(l => (
             <button key={l.code}
               style={{ ...S.btnSecondary, ...(settings.language === l.code ? { background: `${S.accent}15`, borderColor: `${S.accent}40`, color: S.accent } : {}) }}
@@ -1567,19 +1886,74 @@ function SettingsPage({ settings, setSettings, saveFn, t, S }) {
               transition: 'border 0.15s', boxShadow: settings.accentColor === c ? `0 0 20px ${c}50` : 'none',
             }} />
           ))}
+          {/* Custom color input */}
+          <div style={{ position: 'relative' }}>
+            <input type="color" value={settings.accentColor || '#00F0FF'}
+              onChange={e => setSettings({ ...settings, accentColor: e.target.value })}
+              style={{ width: 40, height: 40, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'transparent', padding: 0 }} />
+          </div>
         </div>
       </div>
 
       <div style={S.card}>
         <div style={S.cardHeader}>{t.currency}</div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          {['EUR','GBP','USD','BRL'].map(c => (
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {['EUR','GBP','USD','BRL','ARS','MXN','CLP','JPY','CNY','TRY'].map(c => (
             <button key={c}
-              style={{ ...S.btnSecondary, ...(settings.currency === c ? { background: `${S.accent}15`, borderColor: `${S.accent}40`, color: S.accent } : {}) }}
+              style={{ ...S.btnSecondary, padding: '8px 14px', ...(settings.currency === c ? { background: `${S.accent}15`, borderColor: `${S.accent}40`, color: S.accent } : {}) }}
               onClick={() => setSettings({ ...settings, currency: c })}>
-              {{ EUR: '€ EUR', GBP: '£ GBP', USD: '$ USD', BRL: 'R$ BRL' }[c]}
+              {c}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Custom Competitions */}
+      <div style={S.card}>
+        <div style={S.cardHeader}>CUSTOM COMPETITIONS</div>
+        <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 12 }}>Add your own competitions that will appear in match logging and season history.</div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="e.g. Brasileirão, Saudi Pro League..."
+            value={customComp} onChange={e => setCustomComp(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { addCustom('customCompetitions', customComp); setCustomComp(''); } }} />
+          <button style={S.btnPrimary} onClick={() => { addCustom('customCompetitions', customComp); setCustomComp(''); }}>+</button>
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {(settings.customCompetitions || []).map((c, i) => (
+            <span key={i} style={{ ...S.badge(S.accent), display: 'flex', alignItems: 'center', gap: 6 }}>
+              {c}
+              <span onClick={() => removeCustom('customCompetitions', c)} style={{ cursor: 'pointer', opacity: 0.5, fontSize: 14, lineHeight: 1 }}>×</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Trophy Types */}
+      <div style={S.card}>
+        <div style={S.cardHeader}>CUSTOM TROPHIES</div>
+        <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 12 }}>Add custom trophy types for your trophy cabinet.</div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="e.g. Copa Libertadores, Ballon d'Or..."
+            value={customTrophy} onChange={e => setCustomTrophy(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') { addCustom('customTrophies', customTrophy); setCustomTrophy(''); } }} />
+          <button style={S.btnPrimary} onClick={() => { addCustom('customTrophies', customTrophy); setCustomTrophy(''); }}>+</button>
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {(settings.customTrophies || []).map((c, i) => (
+            <span key={i} style={{ ...S.badge('#FFD700'), display: 'flex', alignItems: 'center', gap: 6 }}>
+              🏆 {c}
+              <span onClick={() => removeCustom('customTrophies', c)} style={{ cursor: 'pointer', opacity: 0.5, fontSize: 14, lineHeight: 1 }}>×</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Data Management */}
+      <div style={S.card}>
+        <div style={S.cardHeader}>DATA MANAGEMENT</div>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button style={S.btnSecondary} onClick={exportData}>📥 {t.export_data}</button>
+          <button style={S.btnSecondary} onClick={importData}>📤 {t.import_data}</button>
         </div>
       </div>
 
@@ -1637,7 +2011,7 @@ export default function App() {
       case 'saves': return <SavesPage saves={saves} setSaves={setSaves} setActiveSave={setActiveSave} setPage={setPage} saveFn={saveToCloud} t={t} S={S} />;
       case 'manager_career': return activeSave ? <ManagerCareerPage save={activeSave} updateSave={updateSave} t={t} S={S} currency={settings.currency} /> : <DashboardPage saves={saves} setPage={setPage} setActiveSave={setActiveSave} t={t} S={S} userName={user?.displayName || ''} />;
       case 'player_career': return activeSave ? <PlayerCareerPage save={activeSave} updateSave={updateSave} t={t} S={S} currency={settings.currency} /> : <DashboardPage saves={saves} setPage={setPage} setActiveSave={setActiveSave} t={t} S={S} userName={user?.displayName || ''} />;
-      case 'settings': return <SettingsPage settings={settings} setSettings={setSettings} saveFn={saveToCloud} t={t} S={S} />;
+      case 'settings': return <SettingsPage settings={settings} setSettings={setSettings} saveFn={saveToCloud} saves={saves} setSaves={setSaves} t={t} S={S} />;
       default: return <DashboardPage saves={saves} setPage={setPage} setActiveSave={setActiveSave} t={t} S={S} userName={user?.displayName || ''} />;
     }
   };
