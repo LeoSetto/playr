@@ -1,20 +1,12 @@
-// src/firebase.js
-// ⚠️ REPLACE the values below with your Firebase project config
-// Go to: Firebase Console → Project Settings → General → Your apps → Web app
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-export const db = getFirestore(app);
+  apiKey: "AIzaSyBmDGc6vsySgyXiZ5eE-OXFGnERH_bgn3I",
+  authDomain: "playr-9b81d.firebaseapp.com",
+  projectId: "playr-9b81d",
+  storageBucket: "playr-9b81d.firebasestorage.app",
+  messagingSenderId: "552885878114",
+  appId: "1:552885878114:web:3a5aed4286fba39cf1003b",
+  measurementId: "G-1K4GLMFXT1
