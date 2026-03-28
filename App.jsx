@@ -714,6 +714,49 @@ function SavesPage({ saves, setSaves, setActiveSave, setPage, saveFn, t, S }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   DEBOUNCED INPUT — types locally, saves on blur
+   ═══════════════════════════════════════════════════════════════ */
+function DField({ value, onSave, style, type = 'text', placeholder = '', S }) {
+  const [local, setLocal] = useState(value ?? '');
+  const ref = useRef(null);
+  useEffect(() => { setLocal(value ?? ''); }, [value]);
+  return (
+    <input
+      ref={ref}
+      style={style || S?.input}
+      type={type}
+      placeholder={placeholder}
+      value={local}
+      onChange={e => setLocal(type === 'number' ? e.target.value : e.target.value)}
+      onBlur={e => {
+        const v = type === 'number' ? Number(e.target.value) : e.target.value;
+        if (v !== value) onSave(v);
+        if (S) e.target.style.borderColor = S.border;
+      }}
+      onFocus={e => { if (S) e.target.style.borderColor = `${S.accent}60`; }}
+      onKeyDown={e => { if (e.key === 'Enter') ref.current?.blur(); }}
+    />
+  );
+}
+
+function DTextarea({ value, onSave, style, S }) {
+  const [local, setLocal] = useState(value ?? '');
+  useEffect(() => { setLocal(value ?? ''); }, [value]);
+  return (
+    <textarea
+      style={style}
+      value={local}
+      onChange={e => setLocal(e.target.value)}
+      onBlur={e => {
+        if (e.target.value !== value) onSave(e.target.value);
+        if (S) e.target.style.borderColor = S.border;
+      }}
+      onFocus={e => { if (S) e.target.style.borderColor = `${S.accent}60`; }}
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    MANAGER CAREER PAGE (Full featured)
    ═══════════════════════════════════════════════════════════════ */
 function ManagerCareerPage({ save, updateSave, t, S, currency }) {
@@ -743,43 +786,36 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.manager_name}</label>
-            <input style={S.input} value={save.managerName || ''} onChange={e => update('managerName', e.target.value)}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} value={save.managerName || ''} onSave={v => update('managerName', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.manager_age}</label>
-            <input style={S.input} type="number" value={save.managerAge || 35} onChange={e => update('managerAge', Number(e.target.value))}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={save.managerAge || 35} onSave={v => update('managerAge', v)} />
           </div>
         </div>
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.current_team}</label>
-            <input style={S.input} value={save.currentTeam || ''} onChange={e => update('currentTeam', e.target.value)}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} value={save.currentTeam || ''} onSave={v => update('currentTeam', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.league}</label>
-            <input style={S.input} value={save.league || ''} onChange={e => update('league', e.target.value)}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} value={save.league || ''} onSave={v => update('league', v)} />
           </div>
         </div>
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.nationality}</label>
-            <input style={S.input} value={save.managerNationality || ''} onChange={e => update('managerNationality', e.target.value)}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} value={save.managerNationality || ''} onSave={v => update('managerNationality', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.season}</label>
-            <input style={S.input} type="number" value={save.currentSeason || 1} onChange={e => update('currentSeason', Number(e.target.value))}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={save.currentSeason || 1} onSave={v => update('currentSeason', v)} />
           </div>
         </div>
         <div style={S.formGroup}>
           <label style={S.label}>{t.notes}</label>
-          <textarea style={{ ...S.input, minHeight: 80, resize: 'vertical' }} value={save.notes || ''} onChange={e => update('notes', e.target.value)}
-            onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+          <DTextarea S={S} style={{ ...S.input, minHeight: 80, resize: 'vertical' }} value={save.notes || ''} onSave={v => update('notes', v)} />
         </div>
       </div>
 
@@ -1061,15 +1097,13 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.transfer_budget}</label>
-            <input style={S.input} type="number" value={fin.transferBudget || 0}
-              onChange={e => update('finances', { ...fin, transferBudget: Number(e.target.value) })}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={fin.transferBudget || 0}
+              onSave={v => update('finances', { ...fin, transferBudget: Number(v) })} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.wage_budget}</label>
-            <input style={S.input} type="number" value={fin.wageBudget || 0}
-              onChange={e => update('finances', { ...fin, wageBudget: Number(e.target.value) })}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={fin.wageBudget || 0}
+              onSave={v => update('finances', { ...fin, wageBudget: Number(v) })} />
           </div>
         </div>
         <div style={S.statGrid}>
@@ -1241,8 +1275,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.player_name}</label>
-            <input style={S.input} value={save.playerName || ''} onChange={e => update('playerName', e.target.value)}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} value={save.playerName || ''} onSave={v => update('playerName', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.position}</label>
@@ -1254,13 +1287,11 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
         <div style={S.formRow3}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.overall}</label>
-            <input style={S.input} type="number" value={save.playerOverall || 65} onChange={e => update('playerOverall', Number(e.target.value))}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={save.playerOverall || 65} onSave={v => update('playerOverall', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.potential}</label>
-            <input style={S.input} type="number" value={save.playerPotential || 85} onChange={e => update('playerPotential', Number(e.target.value))}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={save.playerPotential || 85} onSave={v => update('playerPotential', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.archetype}</label>
@@ -1273,13 +1304,11 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.current_team}</label>
-            <input style={S.input} value={save.currentTeam || ''} onChange={e => update('currentTeam', e.target.value)}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} value={save.currentTeam || ''} onSave={v => update('currentTeam', v)} />
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.season}</label>
-            <input style={S.input} type="number" value={save.currentSeason || 1} onChange={e => update('currentSeason', Number(e.target.value))}
-              onFocus={e => e.target.style.borderColor = `${S.accent}60`} onBlur={e => e.target.style.borderColor = S.border} />
+            <DField S={S} style={S.input} type="number" value={save.currentSeason || 1} onSave={v => update('currentSeason', v)} />
           </div>
         </div>
       </div>
