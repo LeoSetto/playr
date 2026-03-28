@@ -239,12 +239,13 @@ const PlayrLogo = ({ size = 32, color = '#00F0FF' }) => (
     <defs>
       <linearGradient id="pLogo" x1="0" y1="0" x2="64" y2="64">
         <stop offset="0%" stopColor={color} />
-        <stop offset="100%" stopColor="#6C5CE7" />
+        <stop offset="50%" stopColor="#6C5CE7" />
+        <stop offset="100%" stopColor={color} />
       </linearGradient>
     </defs>
-    <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#pLogo)" opacity="0.15" stroke={color} strokeWidth="2" />
-    <path d="M20 16 L44 32 L20 48 Z" fill={color} opacity="0.9" />
-    <rect x="20" y="16" width="6" height="32" rx="2" fill={color} />
+    <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="none" stroke="url(#pLogo)" strokeWidth="2.5" opacity="0.8" />
+    <polygon points="32,10 52,21 52,43 32,54 12,43 12,21" fill={color} opacity="0.06" />
+    <polygon points="24,20 46,32 24,44" fill={color} opacity="0.9" />
   </svg>
 );
 
@@ -252,9 +253,9 @@ const PlayrLogo = ({ size = 32, color = '#00F0FF' }) => (
    STYLE FACTORY  — EA FC-inspired dark UI
    ═══════════════════════════════════════════════════════════════ */
 const makeStyles = (accent = '#00F0FF') => {
-  const bg = '#0a0a0f';
-  const bgCard = 'rgba(15,20,30,0.7)';
-  const bgCardSolid = '#0f141e';
+  const bg = '#080b12';
+  const bgCard = 'rgba(12,16,24,0.7)';
+  const bgCardSolid = '#0c1018';
   const border = 'rgba(255,255,255,0.06)';
   const textPrimary = '#fff';
   const textSecondary = 'rgba(255,255,255,0.5)';
@@ -265,10 +266,10 @@ const makeStyles = (accent = '#00F0FF') => {
     // Layout
     app: {
       display: 'flex', minHeight: '100vh', background: bg,
-      fontFamily: "'Outfit', sans-serif", color: textPrimary,
+      fontFamily: "'Inter', sans-serif", color: textPrimary,
     },
     sidebar: {
-      width: 260, minHeight: '100vh', background: 'rgba(10,10,18,0.95)',
+      width: 260, minHeight: '100vh', background: 'rgba(8,10,16,0.95)',
       borderRight: `1px solid ${border}`, display: 'flex', flexDirection: 'column',
       padding: '24px 0', position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 100,
       backdropFilter: 'blur(20px)',
@@ -288,7 +289,8 @@ const makeStyles = (accent = '#00F0FF') => {
       display: 'flex', alignItems: 'center', gap: 12, padding: '0 24px', marginBottom: 32,
     },
     sidebarBrand: {
-      fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: '#fff',
+      fontFamily: "'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, color: '#fff',
+      letterSpacing: '0.06em',
     },
     navItem: (active) => ({
       display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px',
@@ -309,8 +311,9 @@ const makeStyles = (accent = '#00F0FF') => {
       marginBottom: 20,
     },
     cardHeader: {
-      fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 600,
-      marginBottom: 16, color: textPrimary,
+      fontFamily: "'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700,
+      marginBottom: 16, color: textPrimary, letterSpacing: '0.04em',
+      textTransform: 'uppercase',
     },
     // Stats
     statGrid: {
@@ -322,8 +325,8 @@ const makeStyles = (accent = '#00F0FF') => {
       padding: '20px', position: 'relative', overflow: 'hidden',
     },
     statValue: {
-      fontSize: 32, fontWeight: 800, color: accent,
-      fontFamily: "'Outfit', sans-serif",
+      fontSize: 32, fontWeight: 700, color: accent,
+      fontFamily: "'Rajdhani', sans-serif", letterSpacing: '0.02em',
     },
     statLabel: {
       fontSize: 12, color: textSecondary, marginTop: 4, fontWeight: 500,
@@ -336,13 +339,13 @@ const makeStyles = (accent = '#00F0FF') => {
     input: {
       width: '100%', padding: '12px 14px', borderRadius: 10,
       background: 'rgba(255,255,255,0.04)', border: `1px solid ${border}`,
-      color: '#fff', fontSize: 14, fontFamily: "'Outfit', sans-serif",
+      color: '#fff', fontSize: 14, fontFamily: "'Inter', sans-serif",
       outline: 'none', boxSizing: 'border-box', transition: 'border 0.2s',
     },
     select: {
       width: '100%', padding: '12px 14px', borderRadius: 10,
       background: 'rgba(255,255,255,0.04)', border: `1px solid ${border}`,
-      color: '#fff', fontSize: 14, fontFamily: "'Outfit', sans-serif",
+      color: '#fff', fontSize: 14, fontFamily: "'Inter', sans-serif",
       outline: 'none', boxSizing: 'border-box', appearance: 'none',
       cursor: 'pointer',
     },
@@ -359,7 +362,7 @@ const makeStyles = (accent = '#00F0FF') => {
       padding: '12px 24px', borderRadius: 10,
       background: `linear-gradient(135deg, ${accent}, #6C5CE7)`,
       color: '#fff', fontSize: 14, fontWeight: 600, border: 'none',
-      cursor: 'pointer', fontFamily: "'Outfit', sans-serif",
+      cursor: 'pointer', fontFamily: "'Inter', sans-serif",
       transition: 'transform 0.1s, box-shadow 0.2s',
       boxShadow: `0 4px 16px ${accent}30`,
     },
@@ -367,18 +370,18 @@ const makeStyles = (accent = '#00F0FF') => {
       padding: '12px 24px', borderRadius: 10,
       background: 'rgba(255,255,255,0.05)', border: `1px solid ${border}`,
       color: textSecondary, fontSize: 14, fontWeight: 500,
-      cursor: 'pointer', fontFamily: "'Outfit', sans-serif",
+      cursor: 'pointer', fontFamily: "'Inter', sans-serif",
       transition: 'all 0.15s',
     },
     btnDanger: {
       padding: '10px 20px', borderRadius: 10,
       background: 'rgba(255,60,60,0.1)', border: '1px solid rgba(255,60,60,0.2)',
       color: '#ff6b6b', fontSize: 13, fontWeight: 600,
-      cursor: 'pointer', fontFamily: "'Outfit', sans-serif",
+      cursor: 'pointer', fontFamily: "'Inter', sans-serif",
     },
     btnSmall: {
       padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-      border: 'none', cursor: 'pointer', fontFamily: "'Outfit', sans-serif",
+      border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
       background: `${accent}15`, color: accent,
     },
     // Table
@@ -408,7 +411,7 @@ const makeStyles = (accent = '#00F0FF') => {
       maxHeight: '85vh', overflowY: 'auto',
     },
     modalTitle: {
-      fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 600,
+      fontFamily: "'Rajdhani', sans-serif", fontSize: 22, fontWeight: 600,
       marginBottom: 24,
     },
     // Tabs
@@ -421,7 +424,7 @@ const makeStyles = (accent = '#00F0FF') => {
       color: active ? accent : textSecondary,
       borderBottom: active ? `2px solid ${accent}` : '2px solid transparent',
       cursor: 'pointer', background: 'none', border: 'none',
-      fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap',
+      fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
       transition: 'all 0.15s',
     }),
     // Badge
@@ -527,7 +530,7 @@ function DashboardPage({ saves, setPage, setActiveSave, t, S, userName }) {
     <div>
       <div style={{ marginBottom: 32 }}>
         <div style={{ fontSize: 14, color: S.textSecondary, marginBottom: 4 }}>{t.welcome_back},</div>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 32, fontWeight: 700 }}>
+        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 32, fontWeight: 700 }}>
           {userName || 'Manager'}
         </div>
       </div>
@@ -642,7 +645,7 @@ function SavesPage({ saves, setSaves, setActiveSave, setPage, saveFn, t, S }) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700 }}>{t.saves}</div>
+        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700 }}>{t.saves}</div>
         <button style={S.btnPrimary} onClick={() => setShowModal(true)}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Icon name="add" size={16} color="#fff" /> {t.create_save}
@@ -690,14 +693,14 @@ function SavesPage({ saves, setSaves, setActiveSave, setPage, saveFn, t, S }) {
           <div style={S.formGroup}>
             <label style={S.label}>{t.game_version}</label>
             <select style={S.select} value={form.gameVersion} onChange={e => setForm({ ...form, gameVersion: e.target.value })}>
-              {['EA FC 26','EA FC 25','EA FC 24'].map(v => <option key={v} value={v} style={{ background: '#0f141e' }}>{v}</option>)}
+              {['EA FC 26','EA FC 25','EA FC 24'].map(v => <option key={v} value={v} style={{ background: '#0c1018' }}>{v}</option>)}
             </select>
           </div>
           <div style={S.formGroup}>
             <label style={S.label}>{t.career_type}</label>
             <select style={S.select} value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
-              <option value="manager" style={{ background: '#0f141e' }}>{t.manager_career}</option>
-              <option value="player" style={{ background: '#0f141e' }}>{t.player_career}</option>
+              <option value="manager" style={{ background: '#0c1018' }}>{t.manager_career}</option>
+              <option value="player" style={{ background: '#0c1018' }}>{t.player_career}</option>
             </select>
           </div>
         </div>
@@ -962,7 +965,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
             <div key={i} style={S.seasonCard}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                 <div>
-                  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 600 }}>{t.season} {ss.seasonNum}</div>
+                  <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 18, fontWeight: 600 }}>{t.season} {ss.seasonNum}</div>
                   <div style={{ fontSize: 13, color: S.textSecondary }}>{ss.team} • {ss.league}</div>
                 </div>
                 <span style={S.badge(S.accent)}>#{ss.leaguePosition}</span>
@@ -1160,7 +1163,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
               <label style={S.label}>{f.label}</label>
               {f.type === 'select' ? (
                 <select style={S.select} value={form[f.name] || ''} onChange={e => setForm({ ...form, [f.name]: e.target.value })}>
-                  {f.options.map(o => <option key={o} value={o} style={{ background: '#0f141e' }}>{o}</option>)}
+                  {f.options.map(o => <option key={o} value={o} style={{ background: '#0c1018' }}>{o}</option>)}
                 </select>
               ) : (
                 <input style={S.input} type={f.type} value={form[f.name] || ''} onChange={e => setForm({ ...form, [f.name]: f.type === 'number' ? Number(e.target.value) : e.target.value })}
@@ -1196,7 +1199,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
     <div>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 4 }}>{save.name}</div>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700 }}>
+        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700 }}>
           {save.managerName || t.manager_career} {save.currentTeam ? `— ${save.currentTeam}` : ''}
         </div>
       </div>
@@ -1244,7 +1247,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
           <div style={S.formGroup}>
             <label style={S.label}>{t.position}</label>
             <select style={S.select} value={save.playerPosition || 'ST'} onChange={e => update('playerPosition', e.target.value)}>
-              {POSITIONS.map(p => <option key={p} value={p} style={{ background: '#0f141e' }}>{p}</option>)}
+              {POSITIONS.map(p => <option key={p} value={p} style={{ background: '#0c1018' }}>{p}</option>)}
             </select>
           </div>
         </div>
@@ -1262,8 +1265,8 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
           <div style={S.formGroup}>
             <label style={S.label}>{t.archetype}</label>
             <select style={S.select} value={save.playerArchetype || ''} onChange={e => update('playerArchetype', e.target.value)}>
-              <option value="" style={{ background: '#0f141e' }}>—</option>
-              {ARCHETYPES_FC26.map(a => <option key={a} value={a} style={{ background: '#0f141e' }}>{a}</option>)}
+              <option value="" style={{ background: '#0c1018' }}>—</option>
+              {ARCHETYPES_FC26.map(a => <option key={a} value={a} style={{ background: '#0c1018' }}>{a}</option>)}
             </select>
           </div>
         </div>
@@ -1370,7 +1373,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
         </div>
         {seasons.map((ss, i) => (
           <div key={i} style={S.seasonCard}>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{t.season} {ss.seasonNum}</div>
+            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{t.season} {ss.seasonNum}</div>
             <div style={{ fontSize: 13, color: S.textSecondary, marginBottom: 6 }}>{ss.team}</div>
             <div style={{ display: 'flex', gap: 16, fontSize: 13, color: S.textSecondary }}>
               <span>⚽ {ss.goals || 0} {t.goals}</span>
@@ -1455,7 +1458,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
               <label style={S.label}>{f.label}</label>
               {f.type === 'select' ? (
                 <select style={S.select} value={form[f.name] || ''} onChange={e => setForm({ ...form, [f.name]: e.target.value })}>
-                  {f.options.map(o => <option key={o} value={o} style={{ background: '#0f141e' }}>{o}</option>)}
+                  {f.options.map(o => <option key={o} value={o} style={{ background: '#0c1018' }}>{o}</option>)}
                 </select>
               ) : (
                 <input style={S.input} type={f.type} value={form[f.name] || ''} onChange={e => setForm({ ...form, [f.name]: f.type === 'number' ? Number(e.target.value) : e.target.value })}
@@ -1485,7 +1488,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
     <div>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 4 }}>{save.name}</div>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700 }}>
+        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700 }}>
           {save.playerName || t.player_career} {save.currentTeam ? `— ${save.currentTeam}` : ''}
         </div>
       </div>
@@ -1510,7 +1513,7 @@ function SettingsPage({ settings, setSettings, saveFn, t, S }) {
 
   return (
     <div>
-      <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, marginBottom: 28 }}>{t.settings}</div>
+      <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700, marginBottom: 28 }}>{t.settings}</div>
 
       <div style={S.card}>
         <div style={S.cardHeader}>{t.language}</div>
@@ -1615,7 +1618,7 @@ export default function App() {
     <div style={{ ...S.sidebar, ...(isMobile ? { transform: mobileNav ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.25s ease', width: 280 } : {}) }}>
       <div style={S.sidebarLogo}>
         <PlayrLogo size={32} color={settings.accentColor} />
-        <span style={S.sidebarBrand}>Playr</span>
+        <span style={S.sidebarBrand}>PLAYR</span>
       </div>
 
       {activeSave && (
@@ -1667,7 +1670,7 @@ export default function App() {
       {/* Global CSS Reset */}
       <style>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0a0f; overflow-x: hidden; }
+        body { background: #080b12; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
