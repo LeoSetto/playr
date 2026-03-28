@@ -8,5 +8,10 @@ const firebaseConfig = {
   projectId: "playr-9b81d",
   storageBucket: "playr-9b81d.firebasestorage.app",
   messagingSenderId: "552885878114",
-  appId: "1:552885878114:web:3a5aed4286fba39cf1003b",
-  measurementId: "G-1K4GLMFXT1
+  appId: "1:552885878114:web:3a5aed4286fba39cf1003b"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+export const db = getFirestore(app);
