@@ -153,7 +153,7 @@ const i18n = {
     edit_player: 'Edit Player', remove_player: 'Remove', playstyles: 'PlayStyles',
     player_info: 'Player Info', home_away: 'Home/Away', stats: 'Stats',
     foot: 'Foot', skill_moves: 'Skill Moves', weak_foot: 'Weak Foot', work_rates: 'Work Rates',
-    morale_label: t.morale_label, dev_plan: 'Dev Plan', height: 'Height', weight: 'Weight',
+    morale_label: 'Morale', dev_plan: 'Dev Plan', height: 'Height', weight: 'Weight',
     jersey: 'Jersey', custom_competitions: 'Custom Competitions',
     custom_trophies: 'Custom Trophies', data_management: 'Data Management',
   },
@@ -273,7 +273,7 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2,
 
 const formatCurrency = (val, currency = 'EUR') => {
   const num = Number(val) || 0;
-  const symbols = { EUR: '€', GBP: '£', USD: '$', BRL: 'R$' };
+  const symbols = { EUR: '€', GBP: '£', USD: '$', BRL: 'R$', ARS: 'ARS$', MXN: 'MX$', CLP: 'CLP$', JPY: '¥', CNY: '¥', TRY: '₺' };
   const sym = symbols[currency] || '€';
   if (num >= 1_000_000) return `${sym}${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${sym}${(num / 1_000).toFixed(0)}K`;
