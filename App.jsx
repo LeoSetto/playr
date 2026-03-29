@@ -307,223 +307,201 @@ const PlayrLogo = ({ size = 32, color = '#00F0FF' }) => (
    STYLE FACTORY  — EA FC-inspired dark UI
    ═══════════════════════════════════════════════════════════════ */
 const makeStyles = (accent = '#00F0FF') => {
-  const bg = '#080b12';
-  const bgCard = 'rgba(12,16,24,0.7)';
-  const bgCardSolid = '#0c1018';
-  const border = 'rgba(255,255,255,0.06)';
-  const textPrimary = '#fff';
-  const textSecondary = 'rgba(255,255,255,0.5)';
-  const textMuted = 'rgba(255,255,255,0.25)';
+  const bg = '#060910';
+  const bgCard = 'rgba(13,17,27,0.85)';
+  const bgCardSolid = '#0b0f18';
+  const bgSurface = 'rgba(255,255,255,0.025)';
+  const border = 'rgba(255,255,255,0.05)';
+  const textPrimary = '#e8eaf0';
+  const textSecondary = 'rgba(255,255,255,0.45)';
+  const textMuted = 'rgba(255,255,255,0.2)';
 
   return {
-    accent, bg, bgCard, border, textPrimary, textSecondary, textMuted,
-    // Layout
+    accent, bg, bgCard, bgSurface, border, textPrimary, textSecondary, textMuted,
     app: {
       display: 'flex', minHeight: '100vh', background: bg,
       fontFamily: "'Inter', sans-serif", color: textPrimary,
     },
     sidebar: {
-      width: 260, minHeight: '100vh', background: 'rgba(8,10,16,0.95)',
+      width: 240, minHeight: '100vh', background: 'rgba(8,11,18,0.98)',
       borderRight: `1px solid ${border}`, display: 'flex', flexDirection: 'column',
-      padding: '24px 0', position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 100,
-      backdropFilter: 'blur(20px)',
+      padding: '20px 0', position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 100,
     },
-    sidebarCollapsed: {
-      width: 68,
-    },
+    sidebarCollapsed: { width: 68 },
     main: {
-      flex: 1, marginLeft: 260, padding: '32px 40px', minHeight: '100vh',
-      maxWidth: 1200, position: 'relative',
+      flex: 1, marginLeft: 240, padding: '28px 36px 28px 36px', minHeight: '100vh',
+      maxWidth: 1140,
     },
-    mainMobile: {
-      marginLeft: 0, padding: '80px 16px 32px',
-    },
-    // Sidebar items
+    mainMobile: { marginLeft: 0, padding: '72px 14px 28px' },
     sidebarLogo: {
-      display: 'flex', alignItems: 'center', gap: 12, padding: '0 24px', marginBottom: 32,
+      display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px', marginBottom: 28,
     },
     sidebarBrand: {
-      fontFamily: "'Rajdhani', sans-serif", fontSize: 24, fontWeight: 700, color: '#fff',
-      letterSpacing: '0.06em',
+      fontFamily: "'Rajdhani', sans-serif", fontSize: 22, fontWeight: 700, color: '#fff',
+      letterSpacing: '0.08em',
     },
     navItem: (active) => ({
-      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px',
-      cursor: 'pointer', fontSize: 14, fontWeight: active ? 600 : 400,
-      color: active ? accent : textSecondary,
-      background: active ? `${accent}10` : 'transparent',
-      borderRight: active ? `3px solid ${accent}` : '3px solid transparent',
-      transition: 'all 0.15s ease',
+      display: 'flex', alignItems: 'center', gap: 10, padding: '10px 20px',
+      cursor: 'pointer', fontSize: 13, fontWeight: active ? 600 : 400,
+      color: active ? '#fff' : textSecondary,
+      background: active ? `${accent}0D` : 'transparent',
+      borderLeft: active ? `2px solid ${accent}` : '2px solid transparent',
+      transition: 'all 0.12s ease', marginBottom: 1,
     }),
     navSection: {
-      fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-      color: textMuted, padding: '20px 24px 8px',
+      fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+      color: textMuted, padding: '18px 20px 6px',
     },
-    // Cards
     card: {
-      background: bgCard, backdropFilter: 'blur(20px)',
-      border: `1px solid ${border}`, borderRadius: 16, padding: '24px',
-      marginBottom: 20,
+      background: bgCard, backdropFilter: 'blur(16px)',
+      border: `1px solid ${border}`, borderRadius: 14, padding: '22px',
+      marginBottom: 16,
     },
     cardHeader: {
-      fontFamily: "'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700,
-      marginBottom: 16, color: textPrimary, letterSpacing: '0.04em',
+      fontFamily: "'Rajdhani', sans-serif", fontSize: 16, fontWeight: 700,
+      marginBottom: 14, color: textSecondary, letterSpacing: '0.08em',
       textTransform: 'uppercase',
     },
-    // Stats
     statGrid: {
-      display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-      gap: 16, marginBottom: 24,
+      display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      gap: 10, marginBottom: 20,
     },
     statCard: {
-      background: bgCard, border: `1px solid ${border}`, borderRadius: 14,
-      padding: '20px', position: 'relative', overflow: 'hidden',
+      background: bgSurface, border: `1px solid ${border}`, borderRadius: 12,
+      padding: '16px 18px', position: 'relative', overflow: 'hidden',
     },
     statValue: {
-      fontSize: 32, fontWeight: 700, color: accent,
-      fontFamily: "'Rajdhani', sans-serif", letterSpacing: '0.02em',
+      fontSize: 28, fontWeight: 700, color: accent,
+      fontFamily: "'Rajdhani', sans-serif", lineHeight: 1,
     },
     statLabel: {
-      fontSize: 12, color: textSecondary, marginTop: 4, fontWeight: 500,
-      textTransform: 'uppercase', letterSpacing: '0.05em',
+      fontSize: 10, color: textMuted, marginTop: 6, fontWeight: 600,
+      textTransform: 'uppercase', letterSpacing: '0.08em',
     },
     statIcon: {
-      position: 'absolute', top: 16, right: 16, fontSize: 24, opacity: 0.15,
+      position: 'absolute', top: 14, right: 14, fontSize: 20, opacity: 0.1,
     },
-    // Form elements
     input: {
-      width: '100%', padding: '12px 14px', borderRadius: 10,
-      background: 'rgba(255,255,255,0.04)', border: `1px solid ${border}`,
-      color: '#fff', fontSize: 14, fontFamily: "'Inter', sans-serif",
+      width: '100%', padding: '11px 14px', borderRadius: 8,
+      background: bgSurface, border: `1px solid ${border}`,
+      color: '#fff', fontSize: 13, fontFamily: "'Inter', sans-serif",
       outline: 'none', boxSizing: 'border-box', transition: 'border 0.2s',
     },
     select: {
-      width: '100%', padding: '12px 14px', borderRadius: 10,
-      background: 'rgba(255,255,255,0.04)', border: `1px solid ${border}`,
-      color: '#fff', fontSize: 14, fontFamily: "'Inter', sans-serif",
-      outline: 'none', boxSizing: 'border-box', appearance: 'none',
-      cursor: 'pointer',
+      width: '100%', padding: '11px 14px', borderRadius: 8,
+      background: bgSurface, border: `1px solid ${border}`,
+      color: '#fff', fontSize: 13, fontFamily: "'Inter', sans-serif",
+      outline: 'none', boxSizing: 'border-box', appearance: 'none', cursor: 'pointer',
     },
     label: {
-      fontSize: 12, fontWeight: 600, color: textSecondary,
-      marginBottom: 6, display: 'block', textTransform: 'uppercase',
-      letterSpacing: '0.05em',
+      fontSize: 10, fontWeight: 600, color: textMuted,
+      marginBottom: 5, display: 'block', textTransform: 'uppercase',
+      letterSpacing: '0.08em',
     },
-    formGroup: { marginBottom: 16 },
+    formGroup: { marginBottom: 14 },
     formRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
     formRow3: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 },
-    // Buttons
     btnPrimary: {
-      padding: '12px 24px', borderRadius: 10,
-      background: `linear-gradient(135deg, ${accent}, #6C5CE7)`,
-      color: '#fff', fontSize: 14, fontWeight: 600, border: 'none',
+      padding: '10px 22px', borderRadius: 8,
+      background: `linear-gradient(135deg, ${accent}E0, #6C5CE7E0)`,
+      color: '#fff', fontSize: 13, fontWeight: 600, border: 'none',
       cursor: 'pointer', fontFamily: "'Inter', sans-serif",
       transition: 'transform 0.1s, box-shadow 0.2s',
-      boxShadow: `0 4px 16px ${accent}30`,
+      boxShadow: `0 2px 12px ${accent}20`,
     },
     btnSecondary: {
-      padding: '12px 24px', borderRadius: 10,
-      background: 'rgba(255,255,255,0.05)', border: `1px solid ${border}`,
-      color: textSecondary, fontSize: 14, fontWeight: 500,
+      padding: '10px 22px', borderRadius: 8,
+      background: bgSurface, border: `1px solid ${border}`,
+      color: textSecondary, fontSize: 13, fontWeight: 500,
       cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-      transition: 'all 0.15s',
+      transition: 'all 0.12s',
     },
     btnDanger: {
-      padding: '10px 20px', borderRadius: 10,
-      background: 'rgba(255,60,60,0.1)', border: '1px solid rgba(255,60,60,0.2)',
-      color: '#ff6b6b', fontSize: 13, fontWeight: 600,
+      padding: '8px 16px', borderRadius: 8,
+      background: 'rgba(255,60,60,0.08)', border: '1px solid rgba(255,60,60,0.15)',
+      color: '#ff6b6b', fontSize: 12, fontWeight: 600,
       cursor: 'pointer', fontFamily: "'Inter', sans-serif",
     },
     btnSmall: {
-      padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+      padding: '5px 12px', borderRadius: 6, fontSize: 11, fontWeight: 600,
       border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-      background: `${accent}15`, color: accent,
+      background: `${accent}12`, color: accent,
     },
-    // Table
-    table: {
-      width: '100%', borderCollapse: 'separate', borderSpacing: '0 4px',
-    },
+    table: { width: '100%', borderCollapse: 'separate', borderSpacing: '0 3px' },
     th: {
-      fontSize: 11, fontWeight: 700, color: textMuted, textTransform: 'uppercase',
-      letterSpacing: '0.06em', textAlign: 'left', padding: '8px 12px',
+      fontSize: 10, fontWeight: 700, color: textMuted, textTransform: 'uppercase',
+      letterSpacing: '0.08em', textAlign: 'left', padding: '6px 10px',
     },
     td: {
-      padding: '12px', fontSize: 13, color: textSecondary,
-      background: 'rgba(255,255,255,0.02)', verticalAlign: 'middle',
+      padding: '10px', fontSize: 12, color: textSecondary,
+      background: bgSurface, verticalAlign: 'middle',
     },
-    tdFirst: { borderRadius: '8px 0 0 8px' },
-    tdLast: { borderRadius: '0 8px 8px 0' },
-    // Modal
+    tdFirst: { borderRadius: '6px 0 0 6px' },
+    tdLast: { borderRadius: '0 6px 6px 0' },
     overlay: {
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
-      backdropFilter: 'blur(8px)', zIndex: 1000,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 20,
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
+      backdropFilter: 'blur(10px)', zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
     },
     modal: {
       background: bgCardSolid, border: `1px solid ${border}`,
-      borderRadius: 20, padding: '32px', maxWidth: 520, width: '100%',
+      borderRadius: 16, padding: '28px', maxWidth: 540, width: '100%',
       maxHeight: '85vh', overflowY: 'auto',
     },
     modalTitle: {
-      fontFamily: "'Rajdhani', sans-serif", fontSize: 22, fontWeight: 600,
-      marginBottom: 24,
+      fontFamily: "'Rajdhani', sans-serif", fontSize: 20, fontWeight: 700,
+      marginBottom: 20, letterSpacing: '0.04em',
     },
-    // Tabs
     tabBar: {
-      display: 'flex', gap: 4, marginBottom: 24, borderBottom: `1px solid ${border}`,
-      paddingBottom: 0, overflowX: 'auto',
+      display: 'flex', gap: 0, marginBottom: 20,
+      background: bgSurface, borderRadius: 10, padding: 3,
+      overflowX: 'auto', border: `1px solid ${border}`,
     },
     tab: (active) => ({
-      padding: '10px 18px', fontSize: 13, fontWeight: active ? 600 : 400,
-      color: active ? accent : textSecondary,
-      borderBottom: active ? `2px solid ${accent}` : '2px solid transparent',
-      cursor: 'pointer', background: 'none', border: 'none',
+      padding: '8px 16px', fontSize: 12, fontWeight: active ? 600 : 400,
+      color: active ? '#fff' : textMuted,
+      background: active ? `${accent}18` : 'transparent',
+      borderRadius: 8,
+      cursor: 'pointer', border: 'none',
       fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
-      transition: 'all 0.15s',
+      transition: 'all 0.12s',
     }),
-    // Badge
     badge: (color = accent) => ({
-      display: 'inline-block', padding: '3px 10px', borderRadius: 20,
-      fontSize: 11, fontWeight: 600,
-      background: `${color}15`, color: color,
-      border: `1px solid ${color}25`,
+      display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+      fontSize: 10, fontWeight: 700,
+      background: `${color}12`, color: color, letterSpacing: '0.03em',
     }),
-    // Empty state
     empty: {
-      textAlign: 'center', padding: '48px 20px', color: textMuted, fontSize: 14,
+      textAlign: 'center', padding: '40px 20px', color: textMuted, fontSize: 13,
     },
-    // Mobile hamburger
     hamburger: {
-      position: 'fixed', top: 16, left: 16, zIndex: 200, width: 44, height: 44,
-      borderRadius: 12, background: bgCard, border: `1px solid ${border}`,
+      position: 'fixed', top: 14, left: 14, zIndex: 200, width: 40, height: 40,
+      borderRadius: 10, background: bgCard, border: `1px solid ${border}`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      cursor: 'pointer', fontSize: 22,
+      cursor: 'pointer', fontSize: 20,
     },
     mobileOverlay: {
       position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 99,
     },
-    // OVR circle
     ovrCircle: (val) => {
       const c = val >= 85 ? '#FFD700' : val >= 75 ? '#2ecc71' : val >= 65 ? '#3498db' : textSecondary;
       return {
-        width: 40, height: 40, borderRadius: '50%', display: 'flex',
+        width: 36, height: 36, borderRadius: '50%', display: 'flex',
         alignItems: 'center', justifyContent: 'center',
-        background: `${c}15`, border: `2px solid ${c}40`,
-        fontSize: 14, fontWeight: 800, color: c,
+        background: `${c}10`, border: `2px solid ${c}30`,
+        fontSize: 13, fontWeight: 800, color: c, fontFamily: "'Rajdhani', sans-serif",
       };
     },
-    // Season card
     seasonCard: {
-      background: bgCard, border: `1px solid ${border}`, borderRadius: 14,
-      padding: '20px', marginBottom: 12,
+      background: bgSurface, border: `1px solid ${border}`, borderRadius: 10,
+      padding: '16px 18px', marginBottom: 8,
     },
-    // Trophy display
     trophyItem: {
-      display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px',
-      background: 'rgba(255,215,0,0.04)', border: '1px solid rgba(255,215,0,0.1)',
-      borderRadius: 12, marginBottom: 8,
+      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
+      background: 'rgba(255,215,0,0.03)', border: '1px solid rgba(255,215,0,0.08)',
+      borderRadius: 10, marginBottom: 6,
     },
-    trophyIcon: { fontSize: 28 },
+    trophyIcon: { fontSize: 24 },
   };
 };
 
@@ -1546,12 +1524,38 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 4 }}>{save.name}</div>
-        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700 }}>
-          {save.managerName || t.manager_career} {save.currentTeam ? `— ${save.currentTeam}` : ''}
+      {/* Profile Banner */}
+      <div style={{
+        background: `linear-gradient(135deg, ${S.accent}08 0%, rgba(108,92,231,0.06) 100%)`,
+        border: `1px solid ${S.border}`, borderRadius: 14,
+        padding: '24px 28px', marginBottom: 20,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16,
+      }}>
+        <div>
+          <div style={{ fontSize: 11, color: S.textMuted, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>{save.name}</div>
+          <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 26, fontWeight: 700, lineHeight: 1.1 }}>
+            {save.managerName || t.manager_career}
+          </div>
+          <div style={{ fontSize: 13, color: S.textSecondary, marginTop: 4, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {save.currentTeam && <span style={{ color: S.accent, fontWeight: 600 }}>{save.currentTeam}</span>}
+            {save.league && <span>· {save.league}</span>}
+            <span>· {t.season} {save.currentSeason || 1}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          {[
+            { v: save.squad?.length || 0, l: t.squad },
+            { v: save.trophies?.length || 0, l: t.trophies },
+            { v: save.matches?.length || 0, l: t.matches },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: S.accent, fontFamily: "'Rajdhani', sans-serif", lineHeight: 1 }}>{s.v}</div>
+              <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>{s.l}</div>
+            </div>
+          ))}
         </div>
       </div>
+
       <div style={S.tabBar}>
         {tabs.map(tb => (
           <button key={tb.key} style={S.tab(tab === tb.key)} onClick={() => setTab(tb.key)}>
@@ -1830,10 +1834,35 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 4 }}>{save.name}</div>
-        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 28, fontWeight: 700 }}>
-          {save.playerName || t.player_career} {save.currentTeam ? `— ${save.currentTeam}` : ''}
+      <div style={{
+        background: `linear-gradient(135deg, ${S.accent}08 0%, rgba(108,92,231,0.06) 100%)`,
+        border: `1px solid ${S.border}`, borderRadius: 14,
+        padding: '24px 28px', marginBottom: 20,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16,
+      }}>
+        <div>
+          <div style={{ fontSize: 11, color: S.textMuted, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>{save.name}</div>
+          <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 26, fontWeight: 700, lineHeight: 1.1 }}>
+            {save.playerName || t.player_career}
+          </div>
+          <div style={{ fontSize: 13, color: S.textSecondary, marginTop: 4, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {save.currentTeam && <span style={{ color: S.accent, fontWeight: 600 }}>{save.currentTeam}</span>}
+            {save.playerPosition && <span>· {save.playerPosition}</span>}
+            {save.playerArchetype && <span>· {save.playerArchetype}</span>}
+            <span>· {t.season} {save.currentSeason || 1}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 16 }}>
+          {[
+            { v: save.playerOverall || '—', l: t.overall },
+            { v: save.playerPotential || '—', l: t.potential },
+            { v: save.trophies?.length || 0, l: t.trophies },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 22, fontWeight: 700, color: i === 0 ? S.accent : S.textPrimary, fontFamily: "'Rajdhani', sans-serif", lineHeight: 1 }}>{s.v}</div>
+              <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 2 }}>{s.l}</div>
+            </div>
+          ))}
         </div>
       </div>
       <div style={S.tabBar}>
@@ -2051,7 +2080,7 @@ export default function App() {
 
   // Sidebar
   const Sidebar = () => (
-    <div style={{ ...S.sidebar, ...(isMobile ? { transform: mobileNav ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.25s ease', width: 280 } : {}) }}>
+    <div style={{ ...S.sidebar, ...(isMobile ? { transform: mobileNav ? 'translateX(0)' : 'translateX(-100%)', transition: 'transform 0.25s ease', width: 260 } : {}) }}>
       <div style={S.sidebarLogo}>
         <PlayrLogo size={32} color={settings.accentColor} />
         <span style={S.sidebarBrand}>PLAYR</span>
@@ -2106,7 +2135,7 @@ export default function App() {
       {/* Global CSS Reset */}
       <style>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #080b12; overflow-x: hidden; }
+        body { background: #060910; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
