@@ -1586,7 +1586,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
   const InfoTab = () => (
     <div>
       <div style={S.card}>
-        <div style={S.cardHeader}>{ t.player_info }/div>
+        <div style={S.cardHeader}>{t.player_info}</div>
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.player_name}</label>
