@@ -53,13 +53,12 @@ const PlayrLogo = ({ size = 48, color = '#00F0FF' }) => (
         <stop offset="50%" stopColor="#6C5CE7" />
         <stop offset="100%" stopColor={color} />
       </linearGradient>
-      <clipPath id="hexClip">
-        <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" />
-      </clipPath>
     </defs>
-    <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" opacity="0.8" />
-    <polygon points="32,10 52,21 52,43 32,54 12,43 12,21" fill={color} opacity="0.06" />
-    <polygon points="24,20 46,32 24,44" fill={color} opacity="0.9" />
+    <path d="M32 4 L56 14 L56 36 Q56 52 32 60 Q8 52 8 36 L8 14 Z" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5" opacity="0.85" />
+    <path d="M32 8 L52 17 L52 35 Q52 49 32 56 Q12 49 12 35 L12 17 Z" fill={color} opacity="0.06" />
+    <circle cx="32" cy="32" r="10" fill="none" stroke={color} strokeWidth="1.5" opacity="0.5" />
+    <path d="M32 22 L36 27 L34 33 L30 33 L28 27 Z" fill={color} opacity="0.3" />
+    <text x="32" y="39" textAnchor="middle" fill={color} fontFamily="Rajdhani, sans-serif" fontWeight="800" fontSize="24" opacity="0.9">P</text>
   </svg>
 );
 
