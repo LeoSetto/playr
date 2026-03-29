@@ -79,6 +79,16 @@ const i18n = {
     wins: 'Vitórias', draws: 'Empates', losses: 'Derrotas',
     goals_for: 'Gols Pró', goals_against: 'Gols Contra', clean_sheets: 'Clean Sheets',
     points: 'Pontos', played: 'Jogos',
+    // Squad enhanced
+    players_count: 'Jogadores', starters_count: 'Titulares', avg_ovr: 'OVR Médio',
+    avg_age: 'Idade Média', squad_value: 'Valor do Elenco', total_wages: 'Folha Salarial',
+    cards_view: 'Cards', table_view: 'Tabela', all_status: 'Todos Status',
+    edit_player: 'Editar Jogador', remove_player: 'Remover', playstyles: 'PlayStyles',
+    player_info: 'Info do Jogador', home_away: 'Casa/Fora', stats: 'Estatísticas',
+    foot: 'Pé', skill_moves: 'Dribles', weak_foot: 'Pé Fraco', work_rates: 'Ritmo',
+    morale_label: 'Moral', dev_plan: 'Plano de Desenv.', height: 'Altura', weight: 'Peso',
+    jersey: 'Camisa', custom_competitions: 'Competições Customizadas',
+    custom_trophies: 'Troféus Customizados', data_management: 'Gerenciamento de Dados',
   },
   en: {
     dashboard: 'Dashboard', manager_career: 'Manager Career', player_career: 'Player Career',
@@ -137,6 +147,15 @@ const i18n = {
     wins: 'Wins', draws: 'Draws', losses: 'Losses',
     goals_for: 'Goals For', goals_against: 'Goals Against', clean_sheets: 'Clean Sheets',
     points: 'Points', played: 'Played',
+    players_count: 'Players', starters_count: 'Starters', avg_ovr: 'Avg OVR',
+    avg_age: 'Avg Age', squad_value: 'Squad Value', total_wages: 'Total Wages',
+    cards_view: 'Cards', table_view: 'Table', all_status: 'All Status',
+    edit_player: 'Edit Player', remove_player: 'Remove', playstyles: 'PlayStyles',
+    player_info: 'Player Info', home_away: 'Home/Away', stats: 'Stats',
+    foot: 'Foot', skill_moves: 'Skill Moves', weak_foot: 'Weak Foot', work_rates: 'Work Rates',
+    morale_label: t.morale_label, dev_plan: 'Dev Plan', height: 'Height', weight: 'Weight',
+    jersey: 'Jersey', custom_competitions: 'Custom Competitions',
+    custom_trophies: 'Custom Trophies', data_management: 'Data Management',
   },
   es: {
     dashboard: 'Panel', manager_career: 'Carrera Entrenador', player_career: 'Carrera Jugador',
@@ -195,6 +214,15 @@ const i18n = {
     wins: 'Victorias', draws: 'Empates', losses: 'Derrotas',
     goals_for: 'Goles a Favor', goals_against: 'Goles en Contra', clean_sheets: 'Porterías Imbatidas',
     points: 'Puntos', played: 'Jugados',
+    players_count: 'Jugadores', starters_count: 'Titulares', avg_ovr: 'OVR Medio',
+    avg_age: 'Edad Media', squad_value: 'Valor Plantilla', total_wages: 'Masa Salarial',
+    cards_view: 'Tarjetas', table_view: 'Tabla', all_status: 'Todos Estados',
+    edit_player: 'Editar Jugador', remove_player: 'Eliminar', playstyles: 'PlayStyles',
+    player_info: 'Info del Jugador', home_away: 'Local/Visitante', stats: 'Estadísticas',
+    foot: 'Pie', skill_moves: 'Regates', weak_foot: 'Pie Malo', work_rates: 'Ritmo',
+    morale_label: 'Moral', dev_plan: 'Plan Desarrollo', height: 'Altura', weight: 'Peso',
+    jersey: 'Camiseta', custom_competitions: 'Competiciones Personalizadas',
+    custom_trophies: 'Trofeos Personalizados', data_management: 'Gestión de Datos',
   }
 };
 
@@ -264,9 +292,14 @@ const PlayrLogo = ({ size = 32, color = '#00F0FF' }) => (
         <stop offset="100%" stopColor={color} />
       </linearGradient>
     </defs>
-    <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="none" stroke="url(#pLogo)" strokeWidth="2.5" opacity="0.8" />
-    <polygon points="32,10 52,21 52,43 32,54 12,43 12,21" fill={color} opacity="0.06" />
-    <polygon points="24,20 46,32 24,44" fill={color} opacity="0.9" />
+    {/* Shield shape */}
+    <path d="M32 4 L56 14 L56 36 Q56 52 32 60 Q8 52 8 36 L8 14 Z" fill="none" stroke="url(#pLogo)" strokeWidth="2.5" opacity="0.85" />
+    <path d="M32 8 L52 17 L52 35 Q52 49 32 56 Q12 49 12 35 L12 17 Z" fill={color} opacity="0.06" />
+    {/* Football/ball */}
+    <circle cx="32" cy="32" r="10" fill="none" stroke={color} strokeWidth="1.5" opacity="0.5" />
+    <path d="M32 22 L36 27 L34 33 L30 33 L28 27 Z" fill={color} opacity="0.3" />
+    {/* P letter */}
+    <text x="32" y="39" textAnchor="middle" fill={color} fontFamily="Rajdhani, sans-serif" fontWeight="800" fontSize="24" opacity="0.9">P</text>
   </svg>
 );
 
@@ -947,12 +980,12 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
             <div style={{ padding: '0 16px 16px', borderTop: `1px solid ${S.border}` }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8, marginTop: 14 }}>
                 {[
-                  { l: 'Contract', v: p.contract },
-                  { l: 'Work Rates', v: p.workRates },
-                  { l: 'Dev. Plan', v: p.devPlan },
-                  { l: 'Nationality', v: p.nationality },
-                  { l: 'Height', v: p.height },
-                  { l: 'Weight', v: p.weight },
+                  { l: t.contract, v: p.contract },
+                  { l: t.work_rates, v: p.workRates },
+                  { l: t.dev_plan, v: p.devPlan },
+                  { l: t.nationality, v: p.nationality },
+                  { l: t.height, v: p.height },
+                  { l: t.weight, v: p.weight },
                 ].filter(x => x.v).map((x, i) => (
                   <div key={i} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: '8px 10px' }}>
                     <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>{x.l}</div>
@@ -963,7 +996,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
               {/* PlayStyles */}
               {p.playStyles?.length > 0 && (
                 <div style={{ marginTop: 12 }}>
-                  <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>PLAYSTYLES</div>
+                  <div style={{ fontSize: 9, color: S.textMuted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{ t.playstyles?.toUpperCase() || 'PLAYSTYLES' }</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                     {p.playStyles.map((ps, i) => (
                       <span key={i} style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, background: ps.endsWith('+') ? 'rgba(255,215,0,0.12)' : `${S.accent}10`, color: ps.endsWith('+') ? '#FFD700' : S.accent, fontWeight: 600 }}>{ps}</span>
@@ -977,8 +1010,8 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
               )}
               {/* Quick actions */}
               <div style={{ display: 'flex', gap: 6, marginTop: 14 }}>
-                <button style={S.btnSmall} onClick={() => { setForm({ ...p, _editIdx: idx }); setShowModal('editPlayer'); }}>✏️ Edit</button>
-                <button style={{ ...S.btnSmall, background: 'rgba(255,60,60,0.1)', color: '#ff6b6b' }} onClick={() => removePlayer(idx)}>🗑️ Remove</button>
+                <button style={S.btnSmall} onClick={() => { setForm({ ...p, _editIdx: idx }); setShowModal('editPlayer'); }}>✏️ {t.edit}</button>
+                <button style={{ ...S.btnSmall, background: 'rgba(255,60,60,0.1)', color: '#ff6b6b' }} onClick={() => removePlayer(idx)}>🗑️ {t.remove_player}</button>
               </div>
             </div>
           )}
@@ -991,12 +1024,12 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
         {/* Stats bar */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, marginBottom: 20 }}>
           {[
-            { v: squad.length, l: 'Players', icon: '👥' },
-            { v: starters, l: 'Starters', icon: '⚽' },
-            { v: avgOvr, l: 'Avg OVR', icon: '📊' },
-            { v: avgAge, l: 'Avg Age', icon: '📅' },
-            { v: formatCurrency(totalValue, currency), l: 'Squad Value', icon: '💰' },
-            { v: formatCurrency(totalWages, currency), l: 'Total Wages', icon: '💵' },
+            { v: squad.length, l: t.players_count, icon: '👥' },
+            { v: starters, l: t.starters_count, icon: '⚽' },
+            { v: avgOvr, l: t.avg_ovr, icon: '📊' },
+            { v: avgAge, l: t.avg_age, icon: '📅' },
+            { v: formatCurrency(totalValue, currency), l: t.squad_value, icon: '💰' },
+            { v: formatCurrency(totalWages, currency), l: t.total_wages, icon: '💵' },
           ].map((s, i) => (
             <div key={i} style={{ ...S.statCard, padding: '14px' }}>
               <div style={{ fontSize: 10, color: S.textMuted, marginBottom: 4 }}>{s.icon} {s.l}</div>
@@ -1019,7 +1052,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
           </div>
           <select style={{ ...S.select, width: 'auto', marginBottom: 0, padding: '5px 10px', fontSize: 11 }}
             value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-            <option value="All" style={{ background: '#0c1018' }}>All Status</option>
+            <option value="All" style={{ background: '#0c1018' }}>{ t.all_status }</option>
             {PLAYER_STATUS.map(s => <option key={s} value={s} style={{ background: '#0c1018' }}>{s}</option>)}
           </select>
           <select style={{ ...S.select, width: 'auto', marginBottom: 0, padding: '5px 10px', fontSize: 11 }}
@@ -1036,7 +1069,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
               <button key={v} onClick={() => setView(v)} style={{
                 ...S.btnSmall, background: view === v ? `${S.accent}20` : 'rgba(255,255,255,0.03)',
                 color: view === v ? S.accent : S.textMuted, fontSize: 10,
-              }}>{v === 'cards' ? '▦ Cards' : '☰ Table'}</button>
+              }}>{v === 'cards' ? t.cards_view : t.table_view}</button>
             ))}
           </div>
           <button style={S.btnPrimary} onClick={() => {
@@ -1361,7 +1394,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
     const modals = {
       player: { title: t.add_player, key: 'squad', fields: [
         { name: 'name', label: t.player, type: 'text' },
-        { name: 'jerseyNumber', label: '#', type: 'number' },
+        { name: 'jerseyNumber', label: t.jersey, type: 'number' },
         { name: 'position', label: t.position, type: 'select', options: POSITIONS },
         { name: 'ovr', label: 'OVR', type: 'number' },
         { name: 'pot', label: 'POT', type: 'number' },
@@ -1370,16 +1403,16 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
         { name: 'wage', label: t.wage, type: 'number' },
         { name: 'contract', label: t.contract, type: 'text' },
         { name: 'status', label: t.status, type: 'select', options: PLAYER_STATUS },
-        { name: 'role', label: 'Role', type: 'select', options: ['', ...PLAYER_ROLES] },
-        { name: 'foot', label: 'Foot', type: 'select', options: FOOT_PREF },
-        { name: 'skillMoves', label: 'Skill Moves', type: 'number' },
-        { name: 'weakFoot', label: 'Weak Foot', type: 'number' },
-        { name: 'workRates', label: 'Work Rates', type: 'select', options: WORK_RATES },
+        { name: 'role', label: t.role, type: 'select', options: ['', ...PLAYER_ROLES] },
+        { name: 'foot', label: t.foot, type: 'select', options: FOOT_PREF },
+        { name: 'skillMoves', label: t.skill_moves, type: 'number' },
+        { name: 'weakFoot', label: t.weak_foot, type: 'number' },
+        { name: 'workRates', label: t.work_rates, type: 'select', options: WORK_RATES },
         { name: 'nationality', label: t.nationality, type: 'text' },
-        { name: 'height', label: 'Height', type: 'text' },
-        { name: 'weight', label: 'Weight', type: 'text' },
-        { name: 'morale', label: 'Morale', type: 'select', options: MORALE_LEVELS },
-        { name: 'devPlan', label: 'Dev Plan', type: 'select', options: DEV_PLANS },
+        { name: 'height', label: t.height, type: 'text' },
+        { name: 'weight', label: t.weight, type: 'text' },
+        { name: 'morale', label: t.morale_label, type: 'select', options: MORALE_LEVELS },
+        { name: 'devPlan', label: t.dev_plan, type: 'select', options: DEV_PLANS },
         { name: 'loan', label: t.loan, type: 'select', options: ['false','true'] },
         { name: 'notes', label: t.notes, type: 'text' },
       ]},
@@ -1396,7 +1429,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
         { name: 'score', label: t.score, type: 'text' },
         { name: 'result', label: t.result, type: 'select', options: ['win','draw','loss'] },
         { name: 'competition', label: t.competition, type: 'select', options: COMPETITIONS },
-        { name: 'homeAway', label: 'Home/Away', type: 'select', options: ['home','away'] },
+        { name: 'homeAway', label: t.home_away, type: 'select', options: ['home','away'] },
         { name: 'scorers', label: t.scorers, type: 'text' },
         { name: 'motm', label: t.motm, type: 'text' },
         { name: 'season', label: t.season, type: 'number' },
@@ -1437,7 +1470,7 @@ function ManagerCareerPage({ save, updateSave, t, S, currency }) {
     if (showModal === 'editPlayer') {
       const editFields = modals.player.fields;
       return (
-        <Modal show={true} onClose={() => setShowModal(null)} title={'✏️ Edit Player'} S={S}>
+        <Modal show={true} onClose={() => setShowModal(null)} title={'✏️ ' + t.edit_player} S={S}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {editFields.map(f => (
               <div key={f.name} style={S.formGroup}>
@@ -1553,7 +1586,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
   const InfoTab = () => (
     <div>
       <div style={S.card}>
-        <div style={S.cardHeader}>Player Info</div>
+        <div style={S.cardHeader}>{ t.player_info }/div>
         <div style={S.formRow}>
           <div style={S.formGroup}>
             <label style={S.label}>{t.player_name}</label>
@@ -1597,7 +1630,7 @@ function PlayerCareerPage({ save, updateSave, t, S, currency }) {
 
       {/* Player Stats Card */}
       <div style={S.card}>
-        <div style={S.cardHeader}>Stats</div>
+        <div style={S.cardHeader}>{t.stats}</div>
         <div style={S.statGrid}>
           <div style={S.statCard}>
             <div style={S.statValue}><div style={{ ...S.ovrCircle(save.playerOverall || 65), width: 56, height: 56, fontSize: 22 }}>{save.playerOverall || 65}</div></div>
@@ -1910,7 +1943,7 @@ function SettingsPage({ settings, setSettings, saveFn, saves, setSaves, t, S }) 
 
       {/* Custom Competitions */}
       <div style={S.card}>
-        <div style={S.cardHeader}>CUSTOM COMPETITIONS</div>
+        <div style={S.cardHeader}>{t.custom_competitions}</div>
         <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 12 }}>Add your own competitions that will appear in match logging and season history.</div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="e.g. Brasileirão, Saudi Pro League..."
@@ -1930,7 +1963,7 @@ function SettingsPage({ settings, setSettings, saveFn, saves, setSaves, t, S }) 
 
       {/* Custom Trophy Types */}
       <div style={S.card}>
-        <div style={S.cardHeader}>CUSTOM TROPHIES</div>
+        <div style={S.cardHeader}>{t.custom_trophies}</div>
         <div style={{ fontSize: 12, color: S.textSecondary, marginBottom: 12 }}>Add custom trophy types for your trophy cabinet.</div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           <input style={{ ...S.input, marginBottom: 0, flex: 1 }} placeholder="e.g. Copa Libertadores, Ballon d'Or..."
@@ -1950,7 +1983,7 @@ function SettingsPage({ settings, setSettings, saveFn, saves, setSaves, t, S }) 
 
       {/* Data Management */}
       <div style={S.card}>
-        <div style={S.cardHeader}>DATA MANAGEMENT</div>
+        <div style={S.cardHeader}>{t.data_management}</div>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <button style={S.btnSecondary} onClick={exportData}>📥 {t.export_data}</button>
           <button style={S.btnSecondary} onClick={importData}>📤 {t.import_data}</button>
